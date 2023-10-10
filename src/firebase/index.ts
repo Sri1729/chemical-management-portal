@@ -1,1 +1,1 @@
-export * as default from "./config"
+export * as default from "./config";
