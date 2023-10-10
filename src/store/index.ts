@@ -1,3 +1,4 @@
+import { addTodo, getTodos } from "@/services";
 import { makeAutoObservable } from "mobx";
 
 class CounterStore {
@@ -7,11 +8,13 @@ class CounterStore {
         makeAutoObservable(this);
     }
 
-    increment = () => {
+    increment = async () => {
+        await getTodos()
         this.count += 1;
     };
 
-    decrement = () => {
+    decrement = async () => {
+        await addTodo();
         if (this.count > 0) {
             this.count -= 1;
         }
