@@ -1,24 +1,24 @@
-import { addTodo, getTodos } from "@/services";
+import { signIn, isSuperUser } from "@/services";
 import { makeAutoObservable } from "mobx";
+import React from "react";
+import { User } from "./user";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-class CounterStore {
-  count = 0;
+export class Root {
+  public user: User = new User();
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  increment = async () => {
-    await getTodos();
-    this.count += 1;
-  };
-
-  decrement = async () => {
-    await addTodo();
-    if (this.count > 0) {
-      this.count -= 1;
-    }
+  public setNavigationRoute = (router: AppRouterInstance) => {
+    this.user.router = router;
   };
 }
 
-export default new CounterStore();
+const store = new Root();
+
+const StoreContext = React.createContext<Root>(store);
+
+/* Hook to use store */
+export const useStore = () => React.useContext(StoreContext);
