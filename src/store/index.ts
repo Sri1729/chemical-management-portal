@@ -1,3 +1,4 @@
+"use client";
 import { signIn, isSuperUser } from "@/services";
 import { makeAutoObservable } from "mobx";
 import React from "react";
