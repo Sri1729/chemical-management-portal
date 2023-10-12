@@ -5,7 +5,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 export class User {
   public isUserLoggedIn: boolean = false;
   public isSuperUser: boolean = false;
-  public router: AppRouterInstance;
+  public router: AppRouterInstance | null = null;
   public isLoading: boolean = false;
   public error: string | null = null;
   private _email: string = "";
