@@ -1,6 +1,7 @@
 import { addStoreChemical, updateStoreChemicals } from "@/services";
 import { Chemical, Sort, UpdateActions } from "@/types";
 import { makeAutoObservable, runInAction } from "mobx";
+import { Root } from ".";
 
 interface newChemicalError {
   name: string;
@@ -44,7 +45,7 @@ export class Chemicals {
 
   private _searchText: string = "";
   private _sortBy: Sort = Sort.INCREASE;
-  constructor() {
+  constructor(rootStore: Root) {
     makeAutoObservable(this);
   }
 

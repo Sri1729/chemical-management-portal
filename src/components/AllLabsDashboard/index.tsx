@@ -1,11 +1,23 @@
 "use client";
 import { Logo } from "@/assets";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { LabsDashboard } from "./LabsTable";
+import { getRealTimeLabUpdates } from "@/services";
+import { useStore } from "@/store";
+import { observer } from "mobx-react-lite";
 
-export const AllLabsDashboard = () => {
+const AllLabsDashboardComp = () => {
+  const store = useStore();
+  useEffect(() => {
+    // Getting real time changes from firestore chemicals collection
+    const unSubscribe = getRealTimeLabUpdates(
+      (val) => (store.laboratory.allLabs = val)
+    );
+    return () => unSubscribe();
+  }, []);
+
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -42,3 +54,5 @@ export const AllLabsDashboard = () => {
     </div>
   );
 };
+
+export const AllLabsDashboard = observer(AllLabsDashboardComp);

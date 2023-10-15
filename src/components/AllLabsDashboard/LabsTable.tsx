@@ -1,21 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { LabTable } from "./LabTable";
-import AddNewLabModal from "./AddNewLabModal";
+import { AddNewLabModal } from "./AddNewLabModal";
+import { useStore } from "@/store";
 
 export const LabsDashboard = () => {
-  const [showAddLabModal, setShowAddLabModal] = useState(false);
-
-  const handleAddLab = () => {
-    // Implement logic to handle adding a new lab
-    console.log("Adding a new lab...");
-  };
+  const store = useStore();
+  const labModal = store?.laboratory;
 
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">All Labs</h2>
       <button
         className="bg-blue-500 text-white py-2 px-4 rounded mb-4"
-        onClick={() => setShowAddLabModal(true)}
+        onClick={() => (labModal.showAddLabModal = true)}
       >
         Add New Lab
       </button>
@@ -24,10 +21,7 @@ export const LabsDashboard = () => {
 
       {/* Modal for adding a new lab */}
 
-      <AddNewLabModal
-        showModal={showAddLabModal}
-        onClose={() => setShowAddLabModal(false)}
-      />
+      <AddNewLabModal />
     </div>
   );
 };
