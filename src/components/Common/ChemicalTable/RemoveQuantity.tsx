@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Chemical } from ".";
+import { DateComp } from "..";
 
 interface RemoveQuantityModalProps {
   showModal: boolean;
@@ -50,38 +51,12 @@ export const RemoveQuantityModal = ({
               className="w-full border border-gray-300 rounded py-2 px-3"
             />
           </div>
-          <div className="flex mb-4">
-            <div className="w-1/2 mr-2">
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="dateInput"
-              >
-                Select Date
-              </label>
-              <input
-                type="date"
-                id="dateInput"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full border border-gray-300 rounded py-2 px-3"
-              />
-            </div>
-            <div className="w-1/2 ml-2">
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="timeDropdown"
-              >
-                Select Time
-              </label>
-              <input
-                type="time"
-                id="timeDropdown"
-                value={selectedTime}
-                onChange={(e) => setSelectedTime(e.target.value)}
-                className="w-full border border-gray-300 rounded py-2 px-3"
-              />
-            </div>
-          </div>
+          <DateComp
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            setSelectedDate={setSelectedDate}
+            setSelectedTime={setSelectedTime}
+          />
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"

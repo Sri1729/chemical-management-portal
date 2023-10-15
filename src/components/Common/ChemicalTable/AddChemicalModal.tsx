@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { DateComp, InputComp, NumberComp } from "..";
 
 interface AddChemicalModalProps {
   showModal: boolean;
   onClose: () => void;
 }
+
 export const AddChemicalModal = ({
   showModal,
   onClose,
@@ -11,6 +13,10 @@ export const AddChemicalModal = ({
   const [name, setName] = useState("");
   const [formula, setFormula] = useState("");
   const [initialQuantity, setInitialQuantity] = useState("");
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  ); // Default to current date
+  const [selectedTime, setSelectedTime] = useState("09:00"); // Default time value
 
   const handleSave = () => {
     // Add your save logic here
@@ -25,27 +31,36 @@ export const AddChemicalModal = ({
 
         <div className="bg-white p-6 rounded-lg max-w-md w-full relative">
           <h2 className="text-xl font-bold mb-4">Add New Chemical</h2>
-          <input
-            type="text"
+          <InputComp
+            title="Name"
+            error=""
+            onChangeValue={setName}
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Name"
-            className="w-full border border-gray-300 rounded py-2 px-3 mb-4"
+            fieldId="name"
           />
-          <input
-            type="text"
+
+          <InputComp
+            title="Formula"
+            error=""
             value={formula}
-            onChange={(e) => setFormula(e.target.value)}
-            placeholder="Formula"
-            className="w-full border border-gray-300 rounded py-2 px-3 mb-4"
+            onChangeValue={setFormula}
+            fieldId="formula"
           />
-          <input
-            type="number"
+
+          <DateComp
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            setSelectedDate={setSelectedDate}
+            setSelectedTime={setSelectedTime}
+          />
+          <NumberComp
+            error=""
+            title="Initial Quantity"
+            fieldId="quantity"
+            onChangeValue={setInitialQuantity}
             value={initialQuantity}
-            onChange={(e) => setInitialQuantity(e.target.value)}
-            placeholder="Initial Quantity"
-            className="w-full border border-gray-300 rounded py-2 px-3 mb-6"
           />
+
           <div className="flex justify-center">
             <button
               className="bg-gray-300 text-gray-700 hover:bg-gray-400 py-2 px-6 rounded mr-2"
