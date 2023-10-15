@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { Laboratory as LaboratoryI, LaboratoryUI } from "@/types";
+import { Laboratory as LaboratoryI, LaboratoryUI, SelectLab } from "@/types";
 import { Root } from ".";
-import { createLaboratory } from "@/services";
+import { createLaboratory, getAllLaboratory } from "@/services";
 
 interface LabCreationError {
   id: string;
@@ -24,6 +24,7 @@ export class Laboratory {
   private _showAddLabModal: boolean = false;
   private _allLabs: LaboratoryI[] = [];
   private _labCreateLoading: boolean = false;
+  private _labsForSelect: SelectLab[] = [];
 
   private _labCreationErrors: LabCreationError = {
     id: "",
@@ -136,5 +137,24 @@ export class Laboratory {
   }
   public set labCreateLoading(value: boolean) {
     this._labCreateLoading = value;
+  }
+
+  public async checkAndGetLabs() {
+    if (this._allLabs?.length === 0) {
+      try {
+        this.allLabs = await getAllLaboratory();
+      } catch (e) {}
+    }
+    this.labsForSelect = this._allLabs.map((item) => ({
+      id: item.id,
+      name: item.name,
+    }));
+  }
+
+  public get labsForSelect(): SelectLab[] {
+    return this._labsForSelect;
+  }
+  public set labsForSelect(value: SelectLab[]) {
+    this._labsForSelect = value;
   }
 }

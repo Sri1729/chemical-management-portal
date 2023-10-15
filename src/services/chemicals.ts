@@ -105,7 +105,6 @@ export const updateStoreChemicals = async ({
           quantity: quantity,
           lab: lab,
         };
-  console.log(log, "log");
   await setDoc(
     docRef,
     {

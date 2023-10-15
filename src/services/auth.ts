@@ -1,5 +1,9 @@
 import { auth } from "@/firebase";
-import { User, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  User,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 export const signIn = async (
   email: string,
@@ -15,4 +19,15 @@ export const signIn = async (
   } catch (error) {
     throw error;
   }
+};
+
+export const createUserSignIn = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}): Promise<User> => {
+  const user = await createUserWithEmailAndPassword(auth, email, password);
+  return user.user;
 };

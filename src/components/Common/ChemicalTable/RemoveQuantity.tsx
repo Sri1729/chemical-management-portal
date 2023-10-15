@@ -15,6 +15,7 @@ const RemoveQuantityModalComp = () => {
   const selectedDate = chemicalStore?.updateChemicalDate;
   const selectedTime = chemicalStore?.updateChemicalTime;
   const selectedLab = chemicalStore?.updateChemicalLab;
+  const labs = store.laboratory.labsForSelect;
 
   const handleSave = () => {
     onClose();
@@ -49,6 +50,7 @@ const RemoveQuantityModalComp = () => {
             error={chemicalStore.updateChemicalError.lab}
             fieldId={"labDropdown"}
             onChangeValue={(val) => (chemicalStore.updateChemicalLab = val)}
+            labs={labs}
           />
 
           <div className="flex justify-center">

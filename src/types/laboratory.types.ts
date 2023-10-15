@@ -23,3 +23,8 @@ export interface CreateLab {
   createdAtDate: string;
   createdAtTime: string;
 }
+
+export interface SelectLab {
+  id: string;
+  name: string;
+}

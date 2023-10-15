@@ -2,26 +2,12 @@ import React, { useState } from "react";
 import { Trash2 } from "react-feather";
 import { AddUserComponent } from "./AddUserModal";
 import { ConfirmationModal } from "./DeleteUserModal";
-const users = [
-  {
-    id: 1,
-    email: "user1@example.com",
-    createdBy: "Admin",
-    createdAt: "2023-10-12",
-    accessLab: "Lab 1",
-  },
-  {
-    id: 2,
-    email: "user2@example.com",
-    createdBy: "Admin",
-    createdAt: "2023-10-13",
-    accessLab: "Lab 2",
-  },
-  // Add more users as needed
-];
+import { useStore } from "@/store";
+import { observer } from "mobx-react-lite";
 
-export const Dashboard = () => {
-  const [showModal, setShowModal] = useState(false);
+const DashboardComp = () => {
+  const store = useStore();
+  const users = store.user.users;
   const [showConfModal, setShowConfModal] = useState(false);
   const [user, setUser] = useState("");
   return (
@@ -30,11 +16,12 @@ export const Dashboard = () => {
         <h2 className="text-2xl font-bold">User Dashboard</h2>
         <button
           className="bg-blue-500 text-white hover:bg-blue-600 py-2 px-6 rounded"
-          onClick={() => setShowModal(true)}
+          onClick={() => (store.user.showAddUserModal = true)}
         >
           Add User
         </button>
       </div>
+
       <div className="overflow-x-auto">
         <table className="w-full bg-white border border-gray-300">
           <thead>
@@ -60,7 +47,7 @@ export const Dashboard = () => {
                   {user.createdAt}
                 </td>
                 <td className="py-2 px-4 border-b text-center">
-                  {user.accessLab}
+                  {user.labAccess}
                 </td>
                 <td className="py-2 px-4 border-b text-center text-red-600">
                   <button
@@ -79,10 +66,7 @@ export const Dashboard = () => {
       </div>
 
       {/* Add User Modal */}
-      <AddUserComponent
-        onClose={() => setShowModal(false)}
-        showModal={showModal}
-      />
+      <AddUserComponent />
 
       {/* Confirmation modal */}
       <ConfirmationModal
@@ -93,3 +77,5 @@ export const Dashboard = () => {
     </div>
   );
 };
+
+export const Dashboard = observer(DashboardComp);

@@ -18,6 +18,10 @@ export const SuperUserDashboard = () => {
     return () => unSubscribe();
   }, []);
 
+  useEffect(() => {
+    store?.laboratory?.checkAndGetLabs();
+  }, []);
+
   return (
     <div
       className="min-h-screen flex flex-col"
