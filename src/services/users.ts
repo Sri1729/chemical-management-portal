@@ -1,4 +1,4 @@
-import { db } from "@/firebase/config";
+import { db } from "@/firebase";
 import { collection, doc, getDoc } from "firebase/firestore";
 
 export const isSuperUser = async (id: string) => {

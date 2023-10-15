@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { DateComp, InputComp } from "../Common";
 
 interface AddNewLabModalProps {
   showModal: boolean;
@@ -29,69 +30,37 @@ const AddNewLabModal = ({ showModal, onClose }: AddNewLabModalProps) => {
 
         <div className="bg-white p-6 rounded-lg max-w-md w-full relative">
           <h2 className="text-xl font-bold mb-4">Add New Lab</h2>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="labIdInput"
-            >
-              Lab ID
-            </label>
-            <input
-              type="text"
-              id="labIdInput"
-              value={labId}
-              onChange={(e) => setLabId(e.target.value)}
-              placeholder="Enter Lab ID"
-              className="w-full border border-gray-300 rounded py-2 px-3"
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="labNameInput"
-            >
-              Lab Name
-            </label>
-            <input
-              type="text"
-              id="labNameInput"
-              value={labName}
-              onChange={(e) => setLabName(e.target.value)}
-              placeholder="Enter Lab Name"
-              className="w-full border border-gray-300 rounded py-2 px-3"
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="roomNumberInput"
-            >
-              Room Number
-            </label>
-            <input
-              type="text"
-              id="roomNumberInput"
-              value={roomNumber}
-              onChange={(e) => setRoomNumber(e.target.value)}
-              placeholder="Enter Room Number"
-              className="w-full border border-gray-300 rounded py-2 px-3"
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="dateInput"
-            >
-              Select Date
-            </label>
-            <input
-              type="date"
-              id="dateInput"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full border border-gray-300 rounded py-2 px-3"
-            />
-          </div>
+          <InputComp
+            title="Lab ID"
+            error=""
+            value={labId}
+            onChangeValue={setLabId}
+            fieldId="labIdInput"
+          />
+
+          <InputComp
+            title="Name"
+            error=""
+            value={labName}
+            onChangeValue={setLabName}
+            fieldId="labName"
+          />
+
+          <InputComp
+            title="Room Number"
+            error=""
+            value={roomNumber}
+            onChangeValue={setRoomNumber}
+            fieldId="roomNumber"
+          />
+
+          <DateComp
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            setSelectedDate={setSelectedDate}
+            setSelectedTime={setSelectedTime}
+          />
+
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -100,7 +69,7 @@ const AddNewLabModal = ({ showModal, onClose }: AddNewLabModalProps) => {
               Select Time
             </label>
             <input
-              type="time"
+              type="select"
               id="timeDropdown"
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}

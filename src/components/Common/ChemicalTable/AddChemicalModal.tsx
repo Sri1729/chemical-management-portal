@@ -1,22 +1,20 @@
 import React, { useState } from "react";
+import { DateComp, InputComp, NumberComp, SaveButton } from "..";
+import { useStore } from "@/store";
+import { observer } from "mobx-react-lite";
 
-interface AddChemicalModalProps {
-  showModal: boolean;
-  onClose: () => void;
-}
-export const AddChemicalModal = ({
-  showModal,
-  onClose,
-}: AddChemicalModalProps) => {
-  const [name, setName] = useState("");
-  const [formula, setFormula] = useState("");
-  const [initialQuantity, setInitialQuantity] = useState("");
+const AddChemicalModalComp = () => {
+  const store = useStore();
+  const chemicalStore = store?.chemicals;
+  const name = chemicalStore?.newChemicalName;
+  const formula = chemicalStore?.newChemicalFormula;
+  const initialQuantity = chemicalStore?.newChemicalQuantity;
+  const selectedDate = chemicalStore?.newChemicalDate;
+  const selectedTime = chemicalStore?.newChemicalTime;
+  const errors = chemicalStore?.newChemicalError;
 
-  const handleSave = () => {
-    // Add your save logic here
-    console.log("Saving...");
-    onClose(); // Close the modal after saving
-  };
+  const showModal = chemicalStore?.newChemicalModalOpen;
+  const onClose = () => (chemicalStore.newChemicalModalOpen = false);
 
   return (
     showModal && (
@@ -25,27 +23,36 @@ export const AddChemicalModal = ({
 
         <div className="bg-white p-6 rounded-lg max-w-md w-full relative">
           <h2 className="text-xl font-bold mb-4">Add New Chemical</h2>
-          <input
-            type="text"
+          <InputComp
+            title="Name"
+            error={errors.name}
+            onChangeValue={(val) => (chemicalStore.newChemicalName = val)}
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Name"
-            className="w-full border border-gray-300 rounded py-2 px-3 mb-4"
+            fieldId="name"
           />
-          <input
-            type="text"
+
+          <InputComp
+            title="Formula"
+            error={errors?.formula}
             value={formula}
-            onChange={(e) => setFormula(e.target.value)}
-            placeholder="Formula"
-            className="w-full border border-gray-300 rounded py-2 px-3 mb-4"
+            onChangeValue={(val) => (chemicalStore.newChemicalFormula = val)}
+            fieldId="formula"
           />
-          <input
-            type="number"
+
+          <DateComp
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            setSelectedDate={(val) => (chemicalStore.newChemicalDate = val)}
+            setSelectedTime={(val) => (chemicalStore.newChemicalTime = val)}
+          />
+          <NumberComp
+            error={errors?.quantity}
+            title="Initial Quantity"
+            fieldId="quantity"
+            onChangeValue={(val) => (chemicalStore.newChemicalQuantity = val)}
             value={initialQuantity}
-            onChange={(e) => setInitialQuantity(e.target.value)}
-            placeholder="Initial Quantity"
-            className="w-full border border-gray-300 rounded py-2 px-3 mb-6"
           />
+
           <div className="flex justify-center">
             <button
               className="bg-gray-300 text-gray-700 hover:bg-gray-400 py-2 px-6 rounded mr-2"
@@ -53,15 +60,17 @@ export const AddChemicalModal = ({
             >
               Cancel
             </button>
-            <button
-              className="bg-blue-500 text-white hover:bg-blue-600 py-2 px-6 rounded"
-              onClick={handleSave}
-            >
-              Save
-            </button>
+            <SaveButton
+              onClick={() => {
+                chemicalStore?.onAddNewChemical();
+              }}
+              loading={chemicalStore.newChemicalAddLoading}
+            />
           </div>
         </div>
       </div>
     )
   );
 };
+
+export const AddChemicalModal = observer(AddChemicalModalComp);

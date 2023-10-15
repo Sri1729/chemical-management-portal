@@ -1,5 +1,5 @@
 import React from "react";
-import ChemicalTable from "../Common/ChemicalTable";
+import { ChemicalTable } from "../Common/ChemicalTable";
 
 export const LabDetails = ({ labId }: { labId: string }) => {
   // Sample lab details (replace with your data fetching logic)

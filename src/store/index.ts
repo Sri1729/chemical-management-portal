@@ -4,9 +4,11 @@ import { makeAutoObservable } from "mobx";
 import React from "react";
 import { User } from "./user";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { Chemicals } from "./chemicals";
 
 export class Root {
   public user: User = new User();
+  public chemicals: Chemicals = new Chemicals();
 
   constructor() {
     makeAutoObservable(this);
