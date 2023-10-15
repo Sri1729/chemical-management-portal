@@ -1,27 +1,20 @@
 import React, { useState } from "react";
-import { DateComp, InputComp } from "../Common";
+import { DateComp, InputComp, SaveButton } from "../Common";
+import { useStore } from "@/store";
+import { observer } from "mobx-react-lite";
 
-interface AddNewLabModalProps {
-  showModal: boolean;
-  onClose: () => void;
-}
+const AddNewLabModalComp = () => {
+  const store = useStore();
+  const labStore = store?.laboratory;
+  const showModal = labStore?.showAddLabModal;
+  const onClose = () => (labStore.showAddLabModal = false);
 
-const AddNewLabModal = ({ showModal, onClose }: AddNewLabModalProps) => {
-  const [labId, setLabId] = useState("");
-  const [labName, setLabName] = useState("");
-  const [roomNumber, setRoomNumber] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
-
-  const handleSave = () => {
-    // Add your logic to save the new lab
-    console.log("Lab ID:", labId);
-    console.log("Lab Name:", labName);
-    console.log("Room Number:", roomNumber);
-    console.log("Selected Date:", selectedDate);
-    console.log("Selected Time:", selectedTime);
-    onClose();
-  };
+  const labId = labStore?.labId;
+  const labName = labStore?.labName;
+  const roomNumber = labStore?.labRoomNumber;
+  const selectedDate = labStore?.labCreateDate;
+  const selectedTime = labStore?.labCreationTime;
+  const errors = labStore.labCreationErrors;
 
   return (
     showModal && (
@@ -32,50 +25,35 @@ const AddNewLabModal = ({ showModal, onClose }: AddNewLabModalProps) => {
           <h2 className="text-xl font-bold mb-4">Add New Lab</h2>
           <InputComp
             title="Lab ID"
-            error=""
+            error={errors.id}
             value={labId}
-            onChangeValue={setLabId}
+            onChangeValue={(val) => (labStore.labId = val)}
             fieldId="labIdInput"
           />
 
           <InputComp
             title="Name"
-            error=""
+            error={errors.name}
             value={labName}
-            onChangeValue={setLabName}
+            onChangeValue={(val) => (labStore.labName = val)}
             fieldId="labName"
           />
 
           <InputComp
             title="Room Number"
-            error=""
+            error={errors.roomNumber}
             value={roomNumber}
-            onChangeValue={setRoomNumber}
+            onChangeValue={(val) => (labStore.labRoomNumber = val)}
             fieldId="roomNumber"
           />
 
           <DateComp
             selectedDate={selectedDate}
             selectedTime={selectedTime}
-            setSelectedDate={setSelectedDate}
-            setSelectedTime={setSelectedTime}
+            setSelectedDate={(val) => (labStore.labCreateDate = val)}
+            setSelectedTime={(val) => (labStore.labCreationTime = val)}
           />
 
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="timeDropdown"
-            >
-              Select Time
-            </label>
-            <input
-              type="select"
-              id="timeDropdown"
-              value={selectedTime}
-              onChange={(e) => setSelectedTime(e.target.value)}
-              className="w-full border border-gray-300 rounded py-2 px-3"
-            />
-          </div>
           <div className="flex justify-center">
             <button
               className="bg-gray-300 text-gray-700 hover:bg-gray-400 py-2 px-6 rounded mr-2"
@@ -83,12 +61,10 @@ const AddNewLabModal = ({ showModal, onClose }: AddNewLabModalProps) => {
             >
               Cancel
             </button>
-            <button
-              className="bg-blue-500 text-white hover:bg-blue-600 py-2 px-6 rounded"
-              onClick={handleSave}
-            >
-              Save
-            </button>
+            <SaveButton
+              onClick={() => labStore.onAddLab()}
+              loading={labStore.labCreateLoading}
+            />
           </div>
         </div>
       </div>
@@ -96,4 +72,4 @@ const AddNewLabModal = ({ showModal, onClose }: AddNewLabModalProps) => {
   );
 };
 
-export default AddNewLabModal;
+export const AddNewLabModal = observer(AddNewLabModalComp);
