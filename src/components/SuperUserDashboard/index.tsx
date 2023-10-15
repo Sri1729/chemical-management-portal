@@ -1,11 +1,23 @@
 "use client";
-import React from "react";
-import ChemicalTable from "../Common/ChemicalTable";
+import React, { useEffect } from "react";
+import { ChemicalTable } from "../Common/ChemicalTable";
 import Image from "next/image";
 import { Logo } from "@/assets";
 import Link from "next/link";
+import { useStore } from "@/store";
+import { getRealTimeUpdates } from "@/services";
 
 export const SuperUserDashboard = () => {
+  const store = useStore();
+
+  useEffect(() => {
+    // Getting real time changes from firestore chemicals collection
+    const unSubscribe = getRealTimeUpdates(
+      (val) => (store.chemicals.chemicals = val)
+    );
+    return () => unSubscribe();
+  }, []);
+
   return (
     <div
       className="min-h-screen flex flex-col"
