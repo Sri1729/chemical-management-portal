@@ -4,16 +4,21 @@ import { useStore } from "@/store";
 import { observer } from "mobx-react-lite";
 import { UpdateActions } from "@/types";
 
-const AddQuantityModalComp = () => {
-  const store = useStore();
-  const chemicalStore = store?.chemicals;
-  const showModal = chemicalStore?.showAddChemicalModal;
-  const onClose = () => (chemicalStore.showAddChemicalModal = false);
-  const chemical = chemicalStore?.selectedChemical;
+interface Props {
+  isFromStorePage: boolean;
+}
 
-  const quantity = chemicalStore?.updateChemicalQuantity;
-  const selectedDate = chemicalStore?.updateChemicalDate;
-  const selectedTime = chemicalStore?.updateChemicalTime;
+const AddQuantityModalComp = ({ isFromStorePage }: Props) => {
+  const store = useStore();
+  const compStore = isFromStorePage ? store?.chemicals : store?.individualLab;
+  const chemicalModel = compStore.chemicalModel;
+  const showModal = chemicalModel?.showAddChemicalModal;
+  const onClose = () => (chemicalModel.showAddChemicalModal = false);
+  const chemical = chemicalModel?.selectedChemical;
+
+  const quantity = chemicalModel?.updateChemicalQuantity;
+  const selectedDate = chemicalModel?.updateChemicalDate;
+  const selectedTime = chemicalModel?.updateChemicalTime;
 
   return (
     showModal && (
@@ -26,17 +31,17 @@ const AddQuantityModalComp = () => {
           <NumberComp
             title="Quantity to Add"
             fieldId="quantityToAdd"
-            error={chemicalStore?.updateChemicalError?.quantity}
+            error={chemicalModel?.updateChemicalError?.quantity}
             onChangeValue={(val) =>
-              (chemicalStore.updateChemicalQuantity = val)
+              (chemicalModel.updateChemicalQuantity = val)
             }
             value={quantity}
           />
           <DateComp
             selectedDate={selectedDate}
             selectedTime={selectedTime}
-            setSelectedDate={(val) => (chemicalStore.updateChemicalDate = val)}
-            setSelectedTime={(val) => (chemicalStore.updateChemicalTime = val)}
+            setSelectedDate={(val) => (chemicalModel.updateChemicalDate = val)}
+            setSelectedTime={(val) => (chemicalModel.updateChemicalTime = val)}
           />
 
           <div className="flex justify-center">
@@ -48,8 +53,8 @@ const AddQuantityModalComp = () => {
             </button>
             <SaveButton
               text="Save"
-              loading={chemicalStore.updateChemicalLoading}
-              onClick={() => chemicalStore?.onUpdateChemical(UpdateActions.ADD)}
+              loading={chemicalModel.updateChemicalLoading}
+              onClick={() => compStore?.onUpdateChemical(UpdateActions.ADD)}
             />
           </div>
         </div>

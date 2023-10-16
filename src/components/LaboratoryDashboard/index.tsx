@@ -1,11 +1,30 @@
 "use client";
 import { Logo } from "@/assets";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { LabDetails } from "./LabDetails";
+import { useStore } from "@/store";
+import { observer } from "mobx-react-lite";
+import { getRealTimeIndividualLabUpdates } from "@/services";
 
-export const LabDashboard = ({ id }: { id: string }) => {
+const LabDashboardComp = ({ id }: { id: string }) => {
+  const store = useStore();
+
+  useEffect(() => {
+    store.individualLab.getLabDetails(id);
+    // Getting real time changes from firestore chemicals collection
+    const unSubscribe = getRealTimeIndividualLabUpdates(
+      id,
+      (val) => (store.individualLab.chemicalModel.chemicals = val)
+    );
+    return () => unSubscribe();
+  }, []);
+
+  useEffect(() => {
+    store?.laboratory?.checkAndGetLabs();
+  }, []);
+
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -42,3 +61,5 @@ export const LabDashboard = ({ id }: { id: string }) => {
     </div>
   );
 };
+
+export const LabDashboard = observer(LabDashboardComp);

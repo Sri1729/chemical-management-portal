@@ -13,7 +13,7 @@ const AllLabsDashboardComp = () => {
   useEffect(() => {
     // Getting real time changes from firestore chemicals collection
     const unSubscribe = getRealTimeLabUpdates(
-      (val) => (store.laboratory.allLabs = val)
+      (val) => (store.laboratory.labModel.allLabs = val)
     );
     return () => unSubscribe();
   }, []);

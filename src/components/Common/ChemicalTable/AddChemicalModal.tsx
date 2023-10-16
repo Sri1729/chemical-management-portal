@@ -3,18 +3,22 @@ import { DateComp, InputComp, NumberComp, SaveButton } from "..";
 import { useStore } from "@/store";
 import { observer } from "mobx-react-lite";
 
-const AddChemicalModalComp = () => {
+interface Props {
+  isFromStorePage: boolean;
+}
+const AddChemicalModalComp = ({ isFromStorePage }: Props) => {
   const store = useStore();
   const chemicalStore = store?.chemicals;
-  const name = chemicalStore?.newChemicalName;
-  const formula = chemicalStore?.newChemicalFormula;
-  const initialQuantity = chemicalStore?.newChemicalQuantity;
-  const selectedDate = chemicalStore?.newChemicalDate;
-  const selectedTime = chemicalStore?.newChemicalTime;
-  const errors = chemicalStore?.newChemicalError;
+  const chemicalModel = chemicalStore?.chemicalModel;
+  const name = chemicalModel?.newChemicalName;
+  const formula = chemicalModel?.newChemicalFormula;
+  const initialQuantity = chemicalModel?.newChemicalQuantity;
+  const selectedDate = chemicalModel?.newChemicalDate;
+  const selectedTime = chemicalModel?.newChemicalTime;
+  const errors = chemicalModel?.newChemicalError;
 
-  const showModal = chemicalStore?.newChemicalModalOpen;
-  const onClose = () => (chemicalStore.newChemicalModalOpen = false);
+  const showModal = chemicalModel?.newChemicalModalOpen;
+  const onClose = () => (chemicalModel.newChemicalModalOpen = false);
 
   return (
     showModal && (
@@ -26,7 +30,7 @@ const AddChemicalModalComp = () => {
           <InputComp
             title="Name"
             error={errors.name}
-            onChangeValue={(val) => (chemicalStore.newChemicalName = val)}
+            onChangeValue={(val) => (chemicalModel.newChemicalName = val)}
             value={name}
             fieldId="name"
           />
@@ -35,21 +39,21 @@ const AddChemicalModalComp = () => {
             title="Formula"
             error={errors?.formula}
             value={formula}
-            onChangeValue={(val) => (chemicalStore.newChemicalFormula = val)}
+            onChangeValue={(val) => (chemicalModel.newChemicalFormula = val)}
             fieldId="formula"
           />
 
           <DateComp
             selectedDate={selectedDate}
             selectedTime={selectedTime}
-            setSelectedDate={(val) => (chemicalStore.newChemicalDate = val)}
-            setSelectedTime={(val) => (chemicalStore.newChemicalTime = val)}
+            setSelectedDate={(val) => (chemicalModel.newChemicalDate = val)}
+            setSelectedTime={(val) => (chemicalModel.newChemicalTime = val)}
           />
           <NumberComp
             error={errors?.quantity}
             title="Initial Quantity"
             fieldId="quantity"
-            onChangeValue={(val) => (chemicalStore.newChemicalQuantity = val)}
+            onChangeValue={(val) => (chemicalModel.newChemicalQuantity = val)}
             value={initialQuantity}
           />
 
@@ -64,7 +68,7 @@ const AddChemicalModalComp = () => {
               onClick={() => {
                 chemicalStore?.onAddNewChemical();
               }}
-              loading={chemicalStore.newChemicalAddLoading}
+              loading={chemicalModel.newChemicalAddLoading}
             />
           </div>
         </div>

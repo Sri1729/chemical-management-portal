@@ -16,6 +16,8 @@ import {
   arrayUnion,
   onSnapshot,
   query,
+  getDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 export const addStoreChemical = async ({
@@ -62,7 +64,7 @@ export const getRealTimeUpdates = (setData: (data: Chemical[]) => void) => {
   return unsubscribe;
 };
 
-const processLogs = (logs: ChemicalResponseLog[]): ChemicalLogUI[] => {
+export const processLogs = (logs: ChemicalResponseLog[]): ChemicalLogUI[] => {
   return logs?.map((item) => {
     const date = new Date(item?.timestamp.seconds * 1000); // Convert Firebase timestamp to JavaScript Date object
 
@@ -89,6 +91,8 @@ export const updateStoreChemicals = async ({
   remainingQuantity,
   timestamp,
   lab,
+  formula,
+  name,
 }: UpdateStoreChemicalRequest) => {
   const docRef = await doc(db, "storeChemicals", id);
 
@@ -103,9 +107,8 @@ export const updateStoreChemicals = async ({
           timestamp: timestamp,
           action: action,
           quantity: quantity,
-          lab: lab,
+          lab: lab?.name,
         };
-  console.log(log, "log");
   await setDoc(
     docRef,
     {
@@ -114,4 +117,35 @@ export const updateStoreChemicals = async ({
     },
     { merge: true }
   );
+
+  // add this to the labChemicals
+  if (action === UpdateActions.DELETE) {
+    const labRef = doc(db, "labChemicals", lab?.id || "", "chemicals", id);
+    const docSnap = await getDoc(labRef);
+    if (docSnap.exists()) {
+      // The document exists, increase the quantity and add a log
+      await updateDoc(labRef, {
+        quantity: `${Number(docSnap?.data()?.quantity) + Number(quantity)}`, // replace with your increment value
+        logs: arrayUnion({
+          timestamp: timestamp,
+          action: UpdateActions.ADD,
+          quantity: quantity,
+        }),
+      });
+    } else {
+      // The document does not exist, create a new document
+      await setDoc(labRef, {
+        name: name,
+        formula: formula,
+        quantity: quantity,
+        logs: [
+          {
+            timestamp: timestamp,
+            action: UpdateActions.ADD,
+            quantity: quantity,
+          },
+        ],
+      });
+    }
+  }
 };

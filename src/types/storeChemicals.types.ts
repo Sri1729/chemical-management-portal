@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { SelectLab } from ".";
 
 export enum UpdateActions {
   ADD = "ADD",
@@ -41,7 +42,9 @@ export interface UpdateStoreChemicalRequest {
   quantity: string;
   remainingQuantity: string;
   timestamp: Date;
-  lab?: string;
+  lab?: SelectLab;
+  name: string;
+  formula: string;
 }
 
 export enum Sort {

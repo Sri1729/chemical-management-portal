@@ -4,21 +4,23 @@ import { useStore } from "@/store";
 import { observer } from "mobx-react-lite";
 import { UpdateActions } from "@/types";
 
-const RemoveQuantityModalComp = () => {
+interface Props {
+  isFromStorePage: boolean;
+}
+
+const RemoveQuantityModalComp = ({ isFromStorePage }: Props) => {
   const store = useStore();
-  const chemicalStore = store?.chemicals;
-  const showModal = chemicalStore?.showRemoveChemicalModal;
-  const onClose = () => (chemicalStore.showRemoveChemicalModal = false);
-  const chemical = chemicalStore?.selectedChemical;
+  const compStore = isFromStorePage ? store?.chemicals : store?.individualLab;
+  const chemicalModel = compStore?.chemicalModel;
+  const showModal = chemicalModel?.showRemoveChemicalModal;
+  const onClose = () => (chemicalModel.showRemoveChemicalModal = false);
+  const chemical = chemicalModel?.selectedChemical;
 
-  const quantity = chemicalStore?.updateChemicalQuantity;
-  const selectedDate = chemicalStore?.updateChemicalDate;
-  const selectedTime = chemicalStore?.updateChemicalTime;
-  const selectedLab = chemicalStore?.updateChemicalLab;
-
-  const handleSave = () => {
-    onClose();
-  };
+  const quantity = chemicalModel?.updateChemicalQuantity;
+  const selectedDate = chemicalModel?.updateChemicalDate;
+  const selectedTime = chemicalModel?.updateChemicalTime;
+  const selectedLab = chemicalModel?.updateChemicalLab;
+  const labs = store.laboratory?.labModel?.labsForSelect;
 
   return (
     showModal && (
@@ -31,26 +33,28 @@ const RemoveQuantityModalComp = () => {
           <NumberComp
             title="Quantity to Remove"
             fieldId="quantityToRemove"
-            error={chemicalStore?.updateChemicalError?.quantity}
+            error={chemicalModel?.updateChemicalError?.quantity}
             onChangeValue={(val) =>
-              (chemicalStore.updateChemicalQuantity = val)
+              (chemicalModel.updateChemicalQuantity = val)
             }
             value={quantity}
           />
           <DateComp
             selectedDate={selectedDate}
             selectedTime={selectedTime}
-            setSelectedDate={(val) => (chemicalStore.updateChemicalDate = val)}
-            setSelectedTime={(val) => (chemicalStore.updateChemicalTime = val)}
+            setSelectedDate={(val) => (chemicalModel.updateChemicalDate = val)}
+            setSelectedTime={(val) => (chemicalModel.updateChemicalTime = val)}
           />
-          <Dropdown
-            title="Select Lab"
-            value={selectedLab}
-            error={chemicalStore.updateChemicalError.lab}
-            fieldId={"labDropdown"}
-            onChangeValue={(val) => (chemicalStore.updateChemicalLab = val)}
-          />
-
+          {isFromStorePage && (
+            <Dropdown
+              title="Select Lab"
+              value={selectedLab}
+              error={chemicalModel.updateChemicalError.lab}
+              fieldId={"labDropdown"}
+              onChangeValue={(val) => (chemicalModel.updateChemicalLab = val)}
+              labs={labs}
+            />
+          )}
           <div className="flex justify-center">
             <button
               className="bg-gray-300 text-gray-700 hover:bg-gray-400 py-2 px-6 rounded mr-2"
@@ -60,10 +64,8 @@ const RemoveQuantityModalComp = () => {
             </button>
             <SaveButton
               text="Remove"
-              loading={chemicalStore.updateChemicalLoading}
-              onClick={() =>
-                chemicalStore?.onUpdateChemical(UpdateActions.DELETE)
-              }
+              loading={chemicalModel.updateChemicalLoading}
+              onClick={() => compStore?.onUpdateChemical(UpdateActions.DELETE)}
             />
           </div>
         </div>

@@ -6,6 +6,7 @@ interface InputCompProps {
   error: string;
   fieldId: string;
   onChangeValue: (val: string) => void;
+  isPasswordField?: boolean;
 }
 
 export const InputComp = ({
@@ -14,6 +15,7 @@ export const InputComp = ({
   value,
   onChangeValue,
   fieldId,
+  isPasswordField = false,
 }: InputCompProps) => {
   return (
     <div className="mb-4">
@@ -24,7 +26,7 @@ export const InputComp = ({
         {title}
       </label>
       <input
-        type="text"
+        type={isPasswordField ? "password" : "text"}
         id={fieldId}
         value={value}
         onChange={(e) => onChangeValue(e?.target?.value)}

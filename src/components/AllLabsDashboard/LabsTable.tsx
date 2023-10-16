@@ -5,7 +5,7 @@ import { useStore } from "@/store";
 
 export const LabsDashboard = () => {
   const store = useStore();
-  const labModal = store?.laboratory;
+  const labModal = store?.laboratory?.labModel;
 
   return (
     <div>

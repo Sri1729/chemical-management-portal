@@ -1,3 +1,4 @@
+import { SelectLab } from "@/types";
 import React from "react";
 
 interface DropdownProps {
@@ -6,6 +7,7 @@ interface DropdownProps {
   error: string;
   fieldId: string;
   onChangeValue: (val: string) => void;
+  labs: SelectLab[];
 }
 export const Dropdown = ({
   title,
@@ -13,6 +15,7 @@ export const Dropdown = ({
   error,
   fieldId,
   onChangeValue,
+  labs,
 }: DropdownProps) => {
   return (
     <div className="mb-4">
@@ -31,9 +34,9 @@ export const Dropdown = ({
         } rounded py-2 px-3 focus:border-blue-500 outline-none`}
       >
         <option value="">Select a lab</option>
-        <option value="Lab 1">Lab 1</option>
-        <option value="Lab 2">Lab 2</option>
-        {/* Add more options based on available labs */}
+        {labs.map((item) => (
+          <option value={item.id}>{item.name}</option>
+        ))}
       </select>
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>

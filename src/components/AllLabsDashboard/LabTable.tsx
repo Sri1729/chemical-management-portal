@@ -5,7 +5,7 @@ import React from "react";
 import { Eye } from "react-feather";
 const LabTableComp = () => {
   const store = useStore();
-  const labs = store?.laboratory?.allLabs;
+  const labs = store?.laboratory?.labModel?.allLabs;
 
   return (
     <table className="w-full bg-white border border-gray-300">
