@@ -15,11 +15,7 @@ const RemoveQuantityModalComp = () => {
   const selectedDate = chemicalStore?.updateChemicalDate;
   const selectedTime = chemicalStore?.updateChemicalTime;
   const selectedLab = chemicalStore?.updateChemicalLab;
-  const labs = store.laboratory.labsForSelect;
-
-  const handleSave = () => {
-    onClose();
-  };
+  const labs = store.laboratory?.labModel?.labsForSelect;
 
   return (
     showModal && (

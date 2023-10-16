@@ -13,7 +13,7 @@ const AddUserComponentComp = () => {
   const password = userStore?.addUserPassword;
   const error = userStore?.addUserErrors;
   const onClose = () => (userStore.showAddUserModal = false);
-  const labs = store.laboratory.labsForSelect;
+  const labs = store.laboratory.labModel.labsForSelect;
   return (
     showModal && (
       <div className="fixed inset-0 flex items-center justify-center z-50">

@@ -1,8 +1,10 @@
 import { LabDashboard } from "@/components/LaboratoryDashboard";
+import { getAllLaboratory } from "@/services";
 import React from "react";
 
 export async function generateStaticParams() {
-  return [{ slug: "1" }];
+  const lab = await getAllLaboratory();
+  return lab.map((item) => ({ slug: item.id }));
 }
 
 const Page = ({ params }: { params: { slug: string } }) => {

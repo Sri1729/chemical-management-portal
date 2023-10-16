@@ -6,15 +6,16 @@ import { observer } from "mobx-react-lite";
 const AddNewLabModalComp = () => {
   const store = useStore();
   const labStore = store?.laboratory;
-  const showModal = labStore?.showAddLabModal;
-  const onClose = () => (labStore.showAddLabModal = false);
+  const labModel = labStore?.labModel;
+  const showModal = labModel?.showAddLabModal;
+  const onClose = () => (labModel.showAddLabModal = false);
 
-  const labId = labStore?.labId;
-  const labName = labStore?.labName;
-  const roomNumber = labStore?.labRoomNumber;
-  const selectedDate = labStore?.labCreateDate;
-  const selectedTime = labStore?.labCreationTime;
-  const errors = labStore.labCreationErrors;
+  const labId = labModel?.labId;
+  const labName = labModel?.labName;
+  const roomNumber = labModel?.labRoomNumber;
+  const selectedDate = labModel?.labCreateDate;
+  const selectedTime = labModel?.labCreationTime;
+  const errors = labModel.labCreationErrors;
 
   return (
     showModal && (
@@ -27,7 +28,7 @@ const AddNewLabModalComp = () => {
             title="Lab ID"
             error={errors.id}
             value={labId}
-            onChangeValue={(val) => (labStore.labId = val)}
+            onChangeValue={(val) => (labModel.labId = val)}
             fieldId="labIdInput"
           />
 
@@ -35,7 +36,7 @@ const AddNewLabModalComp = () => {
             title="Name"
             error={errors.name}
             value={labName}
-            onChangeValue={(val) => (labStore.labName = val)}
+            onChangeValue={(val) => (labModel.labName = val)}
             fieldId="labName"
           />
 
@@ -43,15 +44,15 @@ const AddNewLabModalComp = () => {
             title="Room Number"
             error={errors.roomNumber}
             value={roomNumber}
-            onChangeValue={(val) => (labStore.labRoomNumber = val)}
+            onChangeValue={(val) => (labModel.labRoomNumber = val)}
             fieldId="roomNumber"
           />
 
           <DateComp
             selectedDate={selectedDate}
             selectedTime={selectedTime}
-            setSelectedDate={(val) => (labStore.labCreateDate = val)}
-            setSelectedTime={(val) => (labStore.labCreationTime = val)}
+            setSelectedDate={(val) => (labModel.labCreateDate = val)}
+            setSelectedTime={(val) => (labModel.labCreationTime = val)}
           />
 
           <div className="flex justify-center">
@@ -63,7 +64,7 @@ const AddNewLabModalComp = () => {
             </button>
             <SaveButton
               onClick={() => labStore.onAddLab()}
-              loading={labStore.labCreateLoading}
+              loading={labModel.labCreateLoading}
             />
           </div>
         </div>
