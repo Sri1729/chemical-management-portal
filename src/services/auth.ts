@@ -1,4 +1,4 @@
-import { auth } from "@/firebase";
+import { auth, authWorkerAuth } from "@/firebase";
 import {
   User,
   createUserWithEmailAndPassword,
@@ -28,6 +28,10 @@ export const createUserSignIn = async ({
   email: string;
   password: string;
 }): Promise<User> => {
-  const user = await createUserWithEmailAndPassword(auth, email, password);
+  const user = await createUserWithEmailAndPassword(
+    authWorkerAuth,
+    email,
+    password
+  );
   return user.user;
 };
