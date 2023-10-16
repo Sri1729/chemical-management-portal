@@ -10,6 +10,8 @@ import { getRealTimeUserUpdates } from "@/services";
 
 const UsersDashboardComp = () => {
   const store = useStore();
+  const isSuperUser = store.user.isSuperUser;
+
   useEffect(() => {
     store?.laboratory?.checkAndGetLabs();
   }, []);
@@ -36,20 +38,22 @@ const UsersDashboardComp = () => {
         <div className="flex items-center justify-center mr-4">
           <Image src={Logo} alt="Logo" className=" h-12 w-auto" />
         </div>
-        <div className="flex items-center">
-          <Link
-            href="/home"
-            className="bg-blue-500 text-white px-4 py-2 rounded mx-2"
-          >
-            Store
-          </Link>
-          <Link
-            href={"/laboratory/all"}
-            className="bg-green-500 text-white px-4 py-2 rounded mx-2"
-          >
-            Labs
-          </Link>
-        </div>
+        {isSuperUser && (
+          <div className="flex items-center">
+            <Link
+              href="/home"
+              className="bg-blue-500 text-white px-4 py-2 rounded mx-2"
+            >
+              Store
+            </Link>
+            <Link
+              href={"/laboratory/all"}
+              className="bg-green-500 text-white px-4 py-2 rounded mx-2"
+            >
+              Labs
+            </Link>
+          </div>
+        )}
       </header>
 
       <div className="flex-grow overflow-auto p-4">
