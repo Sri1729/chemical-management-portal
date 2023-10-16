@@ -4,10 +4,14 @@ import { useStore } from "@/store";
 import { observer } from "mobx-react-lite";
 import { UpdateActions } from "@/types";
 
-const AddQuantityModalComp = () => {
+interface Props {
+  isFromStorePage: boolean;
+}
+
+const AddQuantityModalComp = ({ isFromStorePage }: Props) => {
   const store = useStore();
-  const chemicalStore = store?.chemicals;
-  const chemicalModel = chemicalStore.chemicalModel;
+  const compStore = isFromStorePage ? store?.chemicals : store?.individualLab;
+  const chemicalModel = compStore.chemicalModel;
   const showModal = chemicalModel?.showAddChemicalModal;
   const onClose = () => (chemicalModel.showAddChemicalModal = false);
   const chemical = chemicalModel?.selectedChemical;
@@ -50,7 +54,7 @@ const AddQuantityModalComp = () => {
             <SaveButton
               text="Save"
               loading={chemicalModel.updateChemicalLoading}
-              onClick={() => chemicalStore?.onUpdateChemical(UpdateActions.ADD)}
+              onClick={() => compStore?.onUpdateChemical(UpdateActions.ADD)}
             />
           </div>
         </div>

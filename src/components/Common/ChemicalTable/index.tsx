@@ -9,10 +9,14 @@ import { observer } from "mobx-react-lite";
 import { SearchBox } from "..";
 import { Sort } from "@/types";
 
-const ChemicalTableComp = () => {
+interface ChemicalTableCompProps {
+  from: "ALL" | "SINGLE";
+}
+const ChemicalTableComp = ({ from }: ChemicalTableCompProps) => {
   const store = useStore();
-  const chemicalStore = store?.chemicals;
-  const chemicalModel = chemicalStore?.chemicalModel;
+  const isFromStorePage = from === "ALL";
+  const compStore = isFromStorePage ? store?.chemicals : store?.individualLab;
+  const chemicalModel = compStore?.chemicalModel;
   const chemicals = chemicalModel?.chemicals;
   const searchText = chemicalModel?.searchText;
   const sortBy = chemicalModel?.sortBy;
@@ -24,12 +28,14 @@ const ChemicalTableComp = () => {
           value={searchText}
           setValue={(val) => (chemicalModel.searchText = val)}
         />
-        <button
-          className="bg-blue-500 text-white hover:bg-blue-600 py-2 px-6 rounded mr-2"
-          onClick={() => (chemicalModel.newChemicalModalOpen = true)}
-        >
-          Add New Chemical
-        </button>
+        {isFromStorePage && (
+          <button
+            className="bg-blue-500 text-white hover:bg-blue-600 py-2 px-6 rounded mr-2"
+            onClick={() => (chemicalModel.newChemicalModalOpen = true)}
+          >
+            Add New Chemical
+          </button>
+        )}
       </div>
 
       {searchText && (
@@ -54,13 +60,6 @@ const ChemicalTableComp = () => {
                 </span>
               </div>
             </th>
-            {/* <th
-              className="py-4 px-6 text-center cursor-pointer"
-              onClick={handleSortByQuantity}
-            >
-              Quantity
-              {isSortedByQuantity ? <ArrowUp /> : <ArrowDown />}
-            </th> */}
             <th className="py-4 px-6 text-center">Actions</th>
           </tr>
         </thead>
@@ -74,15 +73,17 @@ const ChemicalTableComp = () => {
               <td className="py-4 px-6 text-center">{chemical.formula}</td>
               <td className="py-4 px-6 text-center">{chemical.quantity}</td>
               <td className="py-4 px-6 text-center">
-                <button
-                  className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
-                  onClick={() => {
-                    chemicalModel.selectedChemical = chemical;
-                    chemicalModel.showAddChemicalModal = true;
-                  }}
-                >
-                  Add Quantity
-                </button>
+                {isFromStorePage && (
+                  <button
+                    className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                    onClick={() => {
+                      chemicalModel.selectedChemical = chemical;
+                      chemicalModel.showAddChemicalModal = true;
+                    }}
+                  >
+                    Add Quantity
+                  </button>
+                )}
                 <button
                   className="bg-red-500 text-white px-2 py-1 rounded"
                   onClick={() => {
@@ -108,16 +109,16 @@ const ChemicalTableComp = () => {
       </table>
 
       {/* Show Quantity Modal */}
-      <AddQuantityModal />
+      <AddQuantityModal isFromStorePage={isFromStorePage} />
 
       {/* Show Remove Quantity Modal */}
-      <RemoveQuantityModal />
+      <RemoveQuantityModal isFromStorePage={isFromStorePage} />
 
       {/* Show View Logs Modal */}
-      <ViewLogsModal />
+      <ViewLogsModal isFromStorePage={isFromStorePage} />
 
       {/*Show Add chemical modal */}
-      <AddChemicalModal />
+      <AddChemicalModal isFromStorePage={isFromStorePage} />
     </div>
   );
 };

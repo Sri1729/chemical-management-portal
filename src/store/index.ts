@@ -19,7 +19,7 @@ export class Root {
     this.user = new User(this);
     this.chemicals = new Chemicals(this);
     this.laboratory = new Laboratory(this);
-    this.individualLab = new IndividualLab();
+    this.individualLab = new IndividualLab(this);
   }
 
   public setNavigationRoute = (router: AppRouterInstance) => {

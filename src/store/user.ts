@@ -36,7 +36,7 @@ export class User {
     makeAutoObservable(this);
     auth.onAuthStateChanged(async (user) => {
       this.user = user;
-      console.log("users", user);
+
       if (user) {
         const _isSuperUser = await isSuperUser(user.uid);
         this.isSuperUser = _isSuperUser?.isSuperUser;

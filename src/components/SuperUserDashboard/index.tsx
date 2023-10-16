@@ -53,7 +53,7 @@ export const SuperUserDashboard = () => {
       </header>
 
       <div className="flex-grow overflow-auto p-4">
-        <ChemicalTable />
+        <ChemicalTable from="ALL" />
       </div>
     </div>
   );

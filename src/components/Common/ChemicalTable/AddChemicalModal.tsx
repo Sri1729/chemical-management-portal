@@ -3,7 +3,10 @@ import { DateComp, InputComp, NumberComp, SaveButton } from "..";
 import { useStore } from "@/store";
 import { observer } from "mobx-react-lite";
 
-const AddChemicalModalComp = () => {
+interface Props {
+  isFromStorePage: boolean;
+}
+const AddChemicalModalComp = ({ isFromStorePage }: Props) => {
   const store = useStore();
   const chemicalStore = store?.chemicals;
   const chemicalModel = chemicalStore?.chemicalModel;

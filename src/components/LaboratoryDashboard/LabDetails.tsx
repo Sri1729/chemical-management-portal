@@ -1,22 +1,18 @@
 import React from "react";
 import { ChemicalTable } from "../Common/ChemicalTable";
+import { observer } from "mobx-react-lite";
+import { useStore } from "@/store";
 
-export const LabDetails = ({ labId }: { labId: string }) => {
+const LabDetailsComp = ({ labId }: { labId: string }) => {
   // Sample lab details (replace with your data fetching logic)
-  const labDetails = {
-    id: labId,
-    name: "Lab 1",
-    createdBy: "Admin",
-    createdAt: "2023-10-15 14:30",
-    // Add more lab details as needed
-  };
+  const store = useStore();
+  const labDetails = store.individualLab.currentLabDetails;
 
   const labDetailItems = [
-    { label: "Lab ID", value: labDetails.id },
-    { label: "Lab Name", value: labDetails.name },
-    { label: "Created By", value: labDetails.createdBy },
-    { label: "Created At", value: labDetails.createdAt },
-    // Add more lab details here
+    { label: "Lab ID", value: labDetails?.id },
+    { label: "Lab Name", value: labDetails?.name },
+    { label: "Created By", value: labDetails?.createdBy },
+    { label: "Created At", value: labDetails?.createdAt },
   ];
 
   return (
@@ -31,7 +27,9 @@ export const LabDetails = ({ labId }: { labId: string }) => {
         ))}
       </div>
 
-      <ChemicalTable />
+      <ChemicalTable from="SINGLE" />
     </div>
   );
 };
+
+export const LabDetails = observer(LabDetailsComp);

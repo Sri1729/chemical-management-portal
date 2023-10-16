@@ -12,6 +12,7 @@ const LabDashboardComp = ({ id }: { id: string }) => {
   const store = useStore();
 
   useEffect(() => {
+    store.individualLab.getLabDetails(id);
     // Getting real time changes from firestore chemicals collection
     const unSubscribe = getRealTimeIndividualLabUpdates(
       id,
@@ -19,6 +20,11 @@ const LabDashboardComp = ({ id }: { id: string }) => {
     );
     return () => unSubscribe();
   }, []);
+
+  useEffect(() => {
+    store?.laboratory?.checkAndGetLabs();
+  }, []);
+
   return (
     <div
       className="min-h-screen flex flex-col"

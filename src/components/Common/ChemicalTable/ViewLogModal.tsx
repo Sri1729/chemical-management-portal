@@ -4,10 +4,14 @@ import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import { X } from "react-feather";
 
-const ViewLogsModalComp = () => {
+interface Props {
+  isFromStorePage: boolean;
+}
+
+const ViewLogsModalComp = ({ isFromStorePage }: Props) => {
   const store = useStore();
-  const chemicalStore = store?.chemicals;
-  const chemicalModel = chemicalStore?.chemicalModel;
+  const compStore = isFromStorePage ? store?.chemicals : store?.individualLab;
+  const chemicalModel = compStore?.chemicalModel;
   const showModal = chemicalModel?.showViewChemicalLogModal;
   const onClose = () => (chemicalModel.showViewChemicalLogModal = false);
   const chemical = chemicalModel.selectedChemical;
@@ -33,7 +37,9 @@ const ViewLogsModalComp = () => {
                 <th className="py-2 px-4">Time</th>
                 <th className="py-2 px-4">Quantity</th>
                 <th className="py-2 px-4">Action</th>
-                <th className="py-2 px-4">Lab Value (if Decrement)</th>
+                {isFromStorePage && (
+                  <th className="py-2 px-4">Lab Value (if Decrement)</th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -46,9 +52,11 @@ const ViewLogsModalComp = () => {
                   <td className="py-2 px-4 text-center">{log.time}</td>
                   <td className="py-2 px-4 text-center">{log.quantity}</td>
                   <td className="py-2 px-4 text-center">{log.action}</td>
-                  <td className="py-2 px-4 text-center">
-                    {log.action === UpdateActions.ADD ? "-" : log?.lab}
-                  </td>
+                  {isFromStorePage && (
+                    <td className="py-2 px-4 text-center">
+                      {log.action === UpdateActions.ADD ? "-" : log?.lab}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

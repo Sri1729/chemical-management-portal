@@ -1,13 +1,24 @@
 import { db } from "@/firebase";
-import { Chemical, CreateLab, Laboratory } from "@/types";
+import {
+  Chemical,
+  CreateLab,
+  LabDetails,
+  Laboratory,
+  UpdateActions,
+  updateIndividualLabChemicalRequest,
+} from "@/types";
 import {
   addDoc,
+  arrayUnion,
   collection,
   doc,
+  getDoc,
   getDocs,
   onSnapshot,
   query,
   setDoc,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { processLogs } from ".";
 
@@ -76,24 +87,63 @@ export const getRealTimeIndividualLabUpdates = (
   id: string,
   setData: (data: Chemical[]) => void
 ) => {
+  const chemicalsRef = collection(db, "labChemicals", id, "chemicals");
   const unsubscribe = onSnapshot(
-    doc(db, "labChemicals", id),
+    chemicalsRef,
     (snapshot) => {
-      const values = snapshot.data();
-      const logs = values?.chemicals;
-      // TODO
-      logs.map((item: any) => ({
-        id: item?.id,
-        name: item?.name,
-        formula: item?.formula,
-        quantity: item?.quantity,
-        logs: processLogs(item?.logs),
-      }));
-      setData(logs);
+      const newData = snapshot?.docs.map((doc) => {
+        const values = doc.data();
+        return {
+          id: doc.id,
+          name: values?.name,
+          formula: values?.formula,
+          quantity: values?.quantity,
+          logs: processLogs(values?.logs),
+        };
+      });
+      setData(newData);
     },
     (error) => {
       console.log("Error getting documents:", error);
     }
   );
   return unsubscribe;
+};
+
+export const getIndividualLabDetails = async (
+  id: string
+): Promise<LabDetails | null> => {
+  const labRef = query(collection(db, "laboratories"), where("id", "==", id));
+  const labSnaps = await getDocs(labRef);
+  const arr: LabDetails[] = [];
+  labSnaps.forEach((snap) => {
+    const lab = snap.data();
+    arr.push({
+      id: lab.id,
+      name: lab.name,
+      createdBy: lab.createdBy,
+      createdAt: new Date(lab?.createdAt?.seconds * 1000).toLocaleString(),
+    });
+  });
+  return arr?.[0];
+};
+
+export const updateIndividualLabChemical = async ({
+  lab,
+  id,
+  quantity,
+  timestamp,
+}: updateIndividualLabChemicalRequest) => {
+  const labRef = doc(db, "labChemicals", lab || "", "chemicals", id);
+  const docSnap = await getDoc(labRef);
+  if (docSnap?.exists()) {
+    await updateDoc(labRef, {
+      quantity: `${Number(docSnap?.data()?.quantity) - Number(quantity)}`, // replace with your increment value
+      logs: arrayUnion({
+        timestamp: timestamp,
+        action: UpdateActions.DELETE,
+        quantity: quantity,
+      }),
+    });
+  }
 };

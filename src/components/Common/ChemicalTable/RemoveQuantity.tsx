@@ -4,10 +4,14 @@ import { useStore } from "@/store";
 import { observer } from "mobx-react-lite";
 import { UpdateActions } from "@/types";
 
-const RemoveQuantityModalComp = () => {
+interface Props {
+  isFromStorePage: boolean;
+}
+
+const RemoveQuantityModalComp = ({ isFromStorePage }: Props) => {
   const store = useStore();
-  const chemicalStore = store?.chemicals;
-  const chemicalModel = chemicalStore?.chemicalModel;
+  const compStore = isFromStorePage ? store?.chemicals : store?.individualLab;
+  const chemicalModel = compStore?.chemicalModel;
   const showModal = chemicalModel?.showRemoveChemicalModal;
   const onClose = () => (chemicalModel.showRemoveChemicalModal = false);
   const chemical = chemicalModel?.selectedChemical;
@@ -41,15 +45,16 @@ const RemoveQuantityModalComp = () => {
             setSelectedDate={(val) => (chemicalModel.updateChemicalDate = val)}
             setSelectedTime={(val) => (chemicalModel.updateChemicalTime = val)}
           />
-          <Dropdown
-            title="Select Lab"
-            value={selectedLab}
-            error={chemicalModel.updateChemicalError.lab}
-            fieldId={"labDropdown"}
-            onChangeValue={(val) => (chemicalModel.updateChemicalLab = val)}
-            labs={labs}
-          />
-
+          {isFromStorePage && (
+            <Dropdown
+              title="Select Lab"
+              value={selectedLab}
+              error={chemicalModel.updateChemicalError.lab}
+              fieldId={"labDropdown"}
+              onChangeValue={(val) => (chemicalModel.updateChemicalLab = val)}
+              labs={labs}
+            />
+          )}
           <div className="flex justify-center">
             <button
               className="bg-gray-300 text-gray-700 hover:bg-gray-400 py-2 px-6 rounded mr-2"
@@ -60,9 +65,7 @@ const RemoveQuantityModalComp = () => {
             <SaveButton
               text="Remove"
               loading={chemicalModel.updateChemicalLoading}
-              onClick={() =>
-                chemicalStore?.onUpdateChemical(UpdateActions.DELETE)
-              }
+              onClick={() => compStore?.onUpdateChemical(UpdateActions.DELETE)}
             />
           </div>
         </div>
