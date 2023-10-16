@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Trash2 } from "react-feather";
+import React from "react";
+import { Trash2, UserCheck, UserX } from "react-feather";
 import { AddUserComponent } from "./AddUserModal";
 import { ConfirmationModal } from "./DeleteUserModal";
 import { useStore } from "@/store";
@@ -8,8 +8,6 @@ import { observer } from "mobx-react-lite";
 const DashboardComp = () => {
   const store = useStore();
   const users = store.user.users;
-  const [showConfModal, setShowConfModal] = useState(false);
-  const [user, setUser] = useState("");
   return (
     <div className="p-4">
       <div className="flex justify-between mb-4">
@@ -28,9 +26,10 @@ const DashboardComp = () => {
             <tr>
               <th className="py-2 px-4 border-b">Email ID</th>
               <th className="py-2 px-4 border-b">Created By</th>
+              <th className="py-2 px-4 border-b">IsSuperUser</th>
               <th className="py-2 px-4 border-b">Created At</th>
               <th className="py-2 px-4 border-b">Access to Lab</th>
-              <th className="py-2 px-4 border-b">Actions</th>
+              {/* <th className="py-2 px-4 border-b">Actions</th> */}
             </tr>
           </thead>
           <tbody>
@@ -41,24 +40,33 @@ const DashboardComp = () => {
               >
                 <td className="py-2 px-4 border-b text-center">{user.email}</td>
                 <td className="py-2 px-4 border-b text-center">
-                  {user.createdBy}
+                  {user.createdBy ?? "-"}
+                </td>
+                <td
+                  className={`py-2 px-4 border-b text-center ${
+                    user.isSuperUser ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  <button className="cursor-auto">
+                    {user.isSuperUser ? <UserCheck /> : <UserX />}
+                  </button>
                 </td>
                 <td className="py-2 px-4 border-b text-center">
                   {user.createdAt}
                 </td>
                 <td className="py-2 px-4 border-b text-center">
-                  {user.labAccess}
+                  {user.isSuperUser ? "*" : user?.labAccess}
                 </td>
-                <td className="py-2 px-4 border-b text-center text-red-600">
+                {/* <td className="py-2 px-4 border-b text-center text-red-600">
                   <button
                     onClick={() => {
-                      setUser(user.email);
-                      setShowConfModal(true);
+                      store.user.selectedUser = user;
+                      store.user.showDeleteUserModal = true;
                     }}
                   >
                     <Trash2 />
                   </button>
-                </td>
+                </td> */}
               </tr>
             ))}
           </tbody>
@@ -69,11 +77,7 @@ const DashboardComp = () => {
       <AddUserComponent />
 
       {/* Confirmation modal */}
-      <ConfirmationModal
-        showModal={showConfModal}
-        onClose={() => setShowConfModal(false)}
-        user={user}
-      />
+      <ConfirmationModal />
     </div>
   );
 };

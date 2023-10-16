@@ -28,6 +28,9 @@ export class User {
   private _addUserErrors: AddUserErrors = { email: "", lab: "", password: "" };
   private _addUserLoading: boolean = false;
   private _users: UserIN[] = [];
+  private _showDeleteUserModal: boolean = false;
+  private _selectedUser: UserIN | null = null;
+  private _deleteUserLoading: boolean = false;
 
   constructor(rootStore: Root) {
     makeAutoObservable(this);
@@ -186,5 +189,31 @@ export class User {
   }
   public set users(value: UserIN[]) {
     this._users = value;
+  }
+
+  public get selectedUser(): UserIN | null {
+    return this._selectedUser;
+  }
+  public set selectedUser(value: UserIN | null) {
+    this._selectedUser = value;
+  }
+
+  public get showDeleteUserModal(): boolean {
+    return this._showDeleteUserModal;
+  }
+  public set showDeleteUserModal(value: boolean) {
+    this._showDeleteUserModal = value;
+  }
+
+  public async deleteUser() {
+    try {
+    } catch (e) {}
+  }
+
+  public get deleteUserLoading(): boolean {
+    return this._deleteUserLoading;
+  }
+  public set deleteUserLoading(value: boolean) {
+    this._deleteUserLoading = value;
   }
 }
