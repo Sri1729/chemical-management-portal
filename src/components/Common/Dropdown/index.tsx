@@ -35,7 +35,9 @@ export const Dropdown = ({
       >
         <option value="">Select a lab</option>
         {labs.map((item) => (
-          <option value={item.id}>{item.name}</option>
+          <option key={item.id} value={item.id}>
+            {item.name}
+          </option>
         ))}
       </select>
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
