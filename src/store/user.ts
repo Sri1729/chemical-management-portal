@@ -65,7 +65,7 @@ export class User {
         this.router?.push("/home");
       } else {
         this.isSuperUser = false;
-        this.router?.push("/laboratory");
+        this.router?.push(`/laboratory/${user?.labAccess}`);
       }
       this.isLoading = false;
     } catch (e) {

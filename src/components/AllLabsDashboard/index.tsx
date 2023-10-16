@@ -10,6 +10,7 @@ import { observer } from "mobx-react-lite";
 
 const AllLabsDashboardComp = () => {
   const store = useStore();
+  const isSuperUser = store.user.isSuperUser;
   useEffect(() => {
     // Getting real time changes from firestore chemicals collection
     const unSubscribe = getRealTimeLabUpdates(
@@ -32,20 +33,22 @@ const AllLabsDashboardComp = () => {
         <div className="flex items-center justify-center mr-4">
           <Image src={Logo} alt="Logo" className=" h-12 w-auto" />
         </div>
-        <div className="flex items-center">
-          <Link
-            href="/users"
-            className="bg-blue-500 text-white px-4 py-2 rounded mx-2"
-          >
-            Users
-          </Link>
-          <Link
-            href={"/home"}
-            className="bg-green-500 text-white px-4 py-2 rounded mx-2"
-          >
-            Store
-          </Link>
-        </div>
+        {isSuperUser && (
+          <div className="flex items-center">
+            <Link
+              href="/users"
+              className="bg-blue-500 text-white px-4 py-2 rounded mx-2"
+            >
+              Users
+            </Link>
+            <Link
+              href={"/home"}
+              className="bg-green-500 text-white px-4 py-2 rounded mx-2"
+            >
+              Store
+            </Link>
+          </div>
+        )}
       </header>
 
       <div className="flex-grow overflow-auto p-4">
