@@ -12,20 +12,21 @@ import { Sort } from "@/types";
 const ChemicalTableComp = () => {
   const store = useStore();
   const chemicalStore = store?.chemicals;
-  const chemicals = chemicalStore?.chemicals;
-  const searchText = chemicalStore?.searchText;
-  const sortBy = chemicalStore?.sortBy;
+  const chemicalModel = chemicalStore?.chemicalModel;
+  const chemicals = chemicalModel?.chemicals;
+  const searchText = chemicalModel?.searchText;
+  const sortBy = chemicalModel?.sortBy;
 
   return (
     <div>
       <div className="flex justify-between my-4">
         <SearchBox
           value={searchText}
-          setValue={(val) => (chemicalStore.searchText = val)}
+          setValue={(val) => (chemicalModel.searchText = val)}
         />
         <button
           className="bg-blue-500 text-white hover:bg-blue-600 py-2 px-6 rounded mr-2"
-          onClick={() => (chemicalStore.newChemicalModalOpen = true)}
+          onClick={() => (chemicalModel.newChemicalModalOpen = true)}
         >
           Add New Chemical
         </button>
@@ -44,7 +45,7 @@ const ChemicalTableComp = () => {
             <th className="py-4 px-6 text-center">Formula</th>
             <th
               className="py-4 px-6 text-center cursor-pointer"
-              onClick={() => chemicalStore.alterSortBy()}
+              onClick={() => chemicalModel.alterSortBy()}
             >
               <div className="flex items-center justify-center">
                 <p className="">Quantity</p>
@@ -76,8 +77,8 @@ const ChemicalTableComp = () => {
                 <button
                   className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
                   onClick={() => {
-                    chemicalStore.selectedChemical = chemical;
-                    chemicalStore.showAddChemicalModal = true;
+                    chemicalModel.selectedChemical = chemical;
+                    chemicalModel.showAddChemicalModal = true;
                   }}
                 >
                   Add Quantity
@@ -85,8 +86,8 @@ const ChemicalTableComp = () => {
                 <button
                   className="bg-red-500 text-white px-2 py-1 rounded"
                   onClick={() => {
-                    chemicalStore.selectedChemical = chemical;
-                    chemicalStore.showRemoveChemicalModal = true;
+                    chemicalModel.selectedChemical = chemical;
+                    chemicalModel.showRemoveChemicalModal = true;
                   }}
                 >
                   Remove Quantity
@@ -94,8 +95,8 @@ const ChemicalTableComp = () => {
                 <button
                   className="bg-gray-500 text-white px-2 py-1 rounded ml-2"
                   onClick={() => {
-                    chemicalStore.selectedChemical = chemical;
-                    chemicalStore.showViewChemicalLogModal = true;
+                    chemicalModel.selectedChemical = chemical;
+                    chemicalModel.showViewChemicalLogModal = true;
                   }}
                 >
                   View Logs

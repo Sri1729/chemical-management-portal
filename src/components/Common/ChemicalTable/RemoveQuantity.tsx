@@ -7,14 +7,15 @@ import { UpdateActions } from "@/types";
 const RemoveQuantityModalComp = () => {
   const store = useStore();
   const chemicalStore = store?.chemicals;
-  const showModal = chemicalStore?.showRemoveChemicalModal;
-  const onClose = () => (chemicalStore.showRemoveChemicalModal = false);
-  const chemical = chemicalStore?.selectedChemical;
+  const chemicalModel = chemicalStore?.chemicalModel;
+  const showModal = chemicalModel?.showRemoveChemicalModal;
+  const onClose = () => (chemicalModel.showRemoveChemicalModal = false);
+  const chemical = chemicalModel?.selectedChemical;
 
-  const quantity = chemicalStore?.updateChemicalQuantity;
-  const selectedDate = chemicalStore?.updateChemicalDate;
-  const selectedTime = chemicalStore?.updateChemicalTime;
-  const selectedLab = chemicalStore?.updateChemicalLab;
+  const quantity = chemicalModel?.updateChemicalQuantity;
+  const selectedDate = chemicalModel?.updateChemicalDate;
+  const selectedTime = chemicalModel?.updateChemicalTime;
+  const selectedLab = chemicalModel?.updateChemicalLab;
   const labs = store.laboratory?.labModel?.labsForSelect;
 
   return (
@@ -28,24 +29,24 @@ const RemoveQuantityModalComp = () => {
           <NumberComp
             title="Quantity to Remove"
             fieldId="quantityToRemove"
-            error={chemicalStore?.updateChemicalError?.quantity}
+            error={chemicalModel?.updateChemicalError?.quantity}
             onChangeValue={(val) =>
-              (chemicalStore.updateChemicalQuantity = val)
+              (chemicalModel.updateChemicalQuantity = val)
             }
             value={quantity}
           />
           <DateComp
             selectedDate={selectedDate}
             selectedTime={selectedTime}
-            setSelectedDate={(val) => (chemicalStore.updateChemicalDate = val)}
-            setSelectedTime={(val) => (chemicalStore.updateChemicalTime = val)}
+            setSelectedDate={(val) => (chemicalModel.updateChemicalDate = val)}
+            setSelectedTime={(val) => (chemicalModel.updateChemicalTime = val)}
           />
           <Dropdown
             title="Select Lab"
             value={selectedLab}
-            error={chemicalStore.updateChemicalError.lab}
+            error={chemicalModel.updateChemicalError.lab}
             fieldId={"labDropdown"}
-            onChangeValue={(val) => (chemicalStore.updateChemicalLab = val)}
+            onChangeValue={(val) => (chemicalModel.updateChemicalLab = val)}
             labs={labs}
           />
 
@@ -58,7 +59,7 @@ const RemoveQuantityModalComp = () => {
             </button>
             <SaveButton
               text="Remove"
-              loading={chemicalStore.updateChemicalLoading}
+              loading={chemicalModel.updateChemicalLoading}
               onClick={() =>
                 chemicalStore?.onUpdateChemical(UpdateActions.DELETE)
               }

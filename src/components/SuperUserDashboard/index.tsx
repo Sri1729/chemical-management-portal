@@ -13,7 +13,7 @@ export const SuperUserDashboard = () => {
   useEffect(() => {
     // Getting real time changes from firestore chemicals collection
     const unSubscribe = getRealTimeUpdates(
-      (val) => (store.chemicals.chemicals = val)
+      (val) => (store.chemicals.chemicalModel.chemicals = val)
     );
     return () => unSubscribe();
   }, []);
