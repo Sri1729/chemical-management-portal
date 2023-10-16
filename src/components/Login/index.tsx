@@ -15,7 +15,10 @@ const LoginComp = () => {
     await store?.user?.signInWithEmail();
   };
   return (
-    <section className="bg-gradient-to-b from-gray-200 to-white">
+    <section
+      className=""
+      style={{ background: "linear-gradient(to right, #c9d6ff, #e2e2e2)" }}
+    >
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <Image src={Logo} className="mx-auto h-24 w-auto mb-10" alt="Logo" />
 
