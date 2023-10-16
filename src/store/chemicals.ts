@@ -45,8 +45,10 @@ export class Chemicals {
 
   private _searchText: string = "";
   private _sortBy: Sort = Sort.INCREASE;
+  public root: Root;
   constructor(rootStore: Root) {
     makeAutoObservable(this);
+    this.root = rootStore;
   }
 
   public onAddNewChemical = async () => {
@@ -108,13 +110,17 @@ export class Chemicals {
 
         await updateStoreChemicals({
           action: action,
+          name: this.selectedChemical?.name || "",
+          formula: this.selectedChemical?.formula || "",
           id: this.selectedChemical?.id || "",
           quantity: this.updateChemicalQuantity,
           remainingQuantity: remQuantity,
           timestamp: new Date(
             `${this.updateChemicalDate}T${this.updateChemicalTime}`
           ),
-          lab: this._updateChemicalLab,
+          lab: this.root.laboratory.labModel.labsForSelect.filter(
+            (item) => item.id === this._updateChemicalLab
+          )?.[0],
         });
         this.updateChemicalLoading = false;
         this.showAddChemicalModal = false;
