@@ -74,6 +74,7 @@ export class User {
         this.router?.push(`/laboratory/${user?.labAccess}`);
       }
       this.isLoading = false;
+      this.resetValues();
     } catch (e) {
       this.isLoading = false;
       this.error =
@@ -230,6 +231,9 @@ export class User {
       this._addUserPassword = "";
       this._addUserAccessLab = "";
       this._isUserAddSuperUser = false;
+
+      this._email = "";
+      this._password = "";
     });
   }
 
