@@ -1,5 +1,11 @@
 import { auth } from "@/firebase";
-import { signIn, isSuperUser, createUserSignIn, createUser } from "@/services";
+import {
+  signIn,
+  isSuperUser,
+  createUserSignIn,
+  createUser,
+  userSignOut,
+} from "@/services";
 import { makeAutoObservable, runInAction } from "mobx";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { User as UserI } from "firebase/auth";
@@ -225,5 +231,12 @@ export class User {
       this._addUserAccessLab = "";
       this._isUserAddSuperUser = false;
     });
+  }
+
+  public async signOut() {
+    try {
+      await userSignOut();
+      this.router?.push("/");
+    } catch (e) {}
   }
 }

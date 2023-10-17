@@ -49,6 +49,12 @@ export const SuperUserDashboard = () => {
           >
             Labs
           </Link>
+          <button
+            className="bg-gray-500 text-white px-2 py-2 rounded ml-2"
+            onClick={() => store.user.signOut()}
+          >
+            Log out
+          </button>
         </div>
       </header>
 
