@@ -21,6 +21,7 @@ import {
   where,
 } from "firebase/firestore";
 import { processLogs } from ".";
+import { v4 as uuidv4 } from "uuid";
 
 export const getRealTimeLabUpdates = (
   setData: (data: Laboratory[]) => void
@@ -136,10 +137,12 @@ export const updateIndividualLabChemical = async ({
 }: updateIndividualLabChemicalRequest) => {
   const labRef = doc(db, "labChemicals", lab || "", "chemicals", id);
   const docSnap = await getDoc(labRef);
+  const uuidKey = uuidv4();
   if (docSnap?.exists()) {
     await updateDoc(labRef, {
       quantity: `${Number(docSnap?.data()?.quantity) - Number(quantity)}`, // replace with your increment value
       logs: arrayUnion({
+        id: uuidKey,
         timestamp: timestamp,
         action: UpdateActions.DELETE,
         quantity: quantity,

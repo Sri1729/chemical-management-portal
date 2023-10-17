@@ -1,4 +1,5 @@
 import { db } from "@/firebase";
+import { v4 as uuidv4 } from "uuid";
 import {
   Chemical,
   AddStoreChemicalRequest,
@@ -95,20 +96,23 @@ export const updateStoreChemicals = async ({
   name,
 }: UpdateStoreChemicalRequest) => {
   const docRef = await doc(db, "storeChemicals", id);
-
+  const uuidKey = uuidv4();
   const log =
     action === UpdateActions.ADD
       ? {
+          id: uuidKey,
           timestamp: timestamp,
           action: action,
           quantity: quantity,
         }
       : {
+          id: uuidKey,
           timestamp: timestamp,
           action: action,
           quantity: quantity,
           lab: lab?.name,
         };
+
   await setDoc(
     docRef,
     {
@@ -127,6 +131,7 @@ export const updateStoreChemicals = async ({
       await updateDoc(labRef, {
         quantity: `${Number(docSnap?.data()?.quantity) + Number(quantity)}`, // replace with your increment value
         logs: arrayUnion({
+          id: uuidKey,
           timestamp: timestamp,
           action: UpdateActions.ADD,
           quantity: quantity,
@@ -140,6 +145,7 @@ export const updateStoreChemicals = async ({
         quantity: quantity,
         logs: [
           {
+            id: uuidKey,
             timestamp: timestamp,
             action: UpdateActions.ADD,
             quantity: quantity,
