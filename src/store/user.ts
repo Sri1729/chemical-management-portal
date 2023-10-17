@@ -167,6 +167,7 @@ export class User {
         });
         this._addUserLoading = false;
         this.showAddUserModal = false;
+        this.resetValues();
       } catch (e) {
         this._addUserLoading = false;
       }
@@ -215,5 +216,14 @@ export class User {
   }
   public set deleteUserLoading(value: boolean) {
     this._deleteUserLoading = value;
+  }
+
+  public resetValues() {
+    runInAction(() => {
+      this._addUserEmail = "";
+      this._addUserPassword = "";
+      this._addUserAccessLab = "";
+      this._isUserAddSuperUser = false;
+    });
   }
 }

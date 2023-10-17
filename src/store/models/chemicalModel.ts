@@ -269,4 +269,19 @@ export class ChemicalModel {
   public get sortBy(): Sort {
     return this._sortBy;
   }
+
+  public resetValues() {
+    runInAction(() => {
+      this._newChemicalName = "";
+      this._newChemicalQuantity = "";
+      this._newChemicalDate = new Date().toISOString().split("T")[0];
+      this._newChemicalTime = "09:00";
+      this._newChemicalFormula = "";
+
+      this._updateChemicalDate = new Date().toISOString().split("T")[0];
+      this._updateChemicalTime = "09:00";
+      this._updateChemicalQuantity = "";
+      this._updateChemicalLab = "";
+    });
+  }
 }
