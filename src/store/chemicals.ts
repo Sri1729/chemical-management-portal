@@ -38,6 +38,7 @@ export class Chemicals {
         });
         this.chemicalModel.newChemicalModalOpen = false;
         this.chemicalModel.newChemicalAddLoading = false;
+        this.chemicalModel.resetValues();
       } catch (e) {
         this.chemicalModel.newChemicalAddLoading = true;
       }
@@ -90,6 +91,8 @@ export class Chemicals {
         this.chemicalModel.updateChemicalLoading = false;
         this.chemicalModel.showAddChemicalModal = false;
         this.chemicalModel.showRemoveChemicalModal = false;
+
+        this.chemicalModel.resetValues();
       } catch (e) {
         this.chemicalModel.updateChemicalLoading = false;
       }

@@ -33,22 +33,31 @@ const AllLabsDashboardComp = () => {
         <div className="flex items-center justify-center mr-4">
           <Image src={Logo} alt="Logo" className=" h-12 w-auto" />
         </div>
-        {isSuperUser && (
-          <div className="flex items-center">
+
+        <div className="flex items-center">
+          {isSuperUser && (
             <Link
               href="/users"
               className="bg-blue-500 text-white px-4 py-2 rounded mx-2"
             >
               Users
             </Link>
+          )}
+          {isSuperUser && (
             <Link
-              href={"/home"}
+              href={"/laboratory/all"}
               className="bg-green-500 text-white px-4 py-2 rounded mx-2"
             >
-              Store
+              Labs
             </Link>
-          </div>
-        )}
+          )}
+          <button
+            className="bg-gray-500 text-white px-2 py-2 rounded ml-2"
+            onClick={() => store.user.signOut()}
+          >
+            Log out
+          </button>
+        </div>
       </header>
 
       <div className="flex-grow overflow-auto p-4">

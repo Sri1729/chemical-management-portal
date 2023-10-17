@@ -1,5 +1,11 @@
 import { auth } from "@/firebase";
-import { signIn, isSuperUser, createUserSignIn, createUser } from "@/services";
+import {
+  signIn,
+  isSuperUser,
+  createUserSignIn,
+  createUser,
+  userSignOut,
+} from "@/services";
 import { makeAutoObservable, runInAction } from "mobx";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { User as UserI } from "firebase/auth";
@@ -68,6 +74,7 @@ export class User {
         this.router?.push(`/laboratory/${user?.labAccess}`);
       }
       this.isLoading = false;
+      this.resetValues();
     } catch (e) {
       this.isLoading = false;
       this.error =
@@ -167,6 +174,7 @@ export class User {
         });
         this._addUserLoading = false;
         this.showAddUserModal = false;
+        this.resetValues();
       } catch (e) {
         this._addUserLoading = false;
       }
@@ -215,5 +223,24 @@ export class User {
   }
   public set deleteUserLoading(value: boolean) {
     this._deleteUserLoading = value;
+  }
+
+  public resetValues() {
+    runInAction(() => {
+      this._addUserEmail = "";
+      this._addUserPassword = "";
+      this._addUserAccessLab = "";
+      this._isUserAddSuperUser = false;
+
+      this._email = "";
+      this._password = "";
+    });
+  }
+
+  public async signOut() {
+    try {
+      await userSignOut();
+      this.router?.push("/");
+    } catch (e) {}
   }
 }

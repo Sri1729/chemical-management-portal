@@ -107,4 +107,14 @@ export class LabModel {
   public set labsForSelect(value: SelectLab[]) {
     this._labsForSelect = value;
   }
+
+  public resetValues() {
+    runInAction(() => {
+      this._labName = "";
+      this._labId = "";
+      this._labRoomNumber = "";
+      this._labCreateDate = new Date().toISOString().split("T")[0];
+      this._labCreationTime = "09:00";
+    });
+  }
 }

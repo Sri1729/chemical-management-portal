@@ -37,6 +37,7 @@ export class Laboratory {
         });
         this.labModel.labCreateLoading = false;
         this.labModel.showAddLabModal = false;
+        this.labModel.resetValues();
       } catch (e) {
         this.labModel.labCreateLoading = false;
       }

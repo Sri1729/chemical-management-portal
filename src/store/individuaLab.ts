@@ -54,6 +54,7 @@ export class IndividualLab {
         this.chemicalModel.updateChemicalLoading = false;
         this.chemicalModel.showAddChemicalModal = false;
         this.chemicalModel.showRemoveChemicalModal = false;
+        this.chemicalModel.resetValues();
       } catch (e) {
         console.log(e);
         this.chemicalModel.updateChemicalLoading = false;
