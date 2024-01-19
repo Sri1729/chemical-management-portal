@@ -5,3 +5,4 @@ export * from "./SaveButton";
 export * from "./Dropdown";
 export * from "./SearchBox";
 export * from "./Checkbox";
+export * from "./ManufacturingAndExpiryInput";

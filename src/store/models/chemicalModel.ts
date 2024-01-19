@@ -3,14 +3,23 @@ import { makeAutoObservable, runInAction } from "mobx";
 
 export interface newChemicalError {
   name: string;
-  formula: string;
   quantity: string;
+  units: string;
+  cost: string;
+  manufactureDate: string;
+  expiryDate: string;
 }
 
 export interface updateChemicalError {
   quantity: string;
   lab: string;
+  cost: string;
+  manufactureDate: string;
+  expiryDate: string;
+  batch: string;
 }
+
+export const qunatity_units = ["kg", "g", "lt", "ml"];
 
 export class ChemicalModel {
   constructor() {
@@ -19,20 +28,31 @@ export class ChemicalModel {
 
   private _chemicals: Chemical[] = [];
   private _newChemicalName: string = "";
-  private _newChemicalFormula: string = "";
+  private _newChemicalCost: string = "";
   private _newChemicalDate: string = new Date().toISOString().split("T")[0];
+  private _newChemicalMfgDate: string = "";
+  private _newChemicalExpDate: string = "";
+  private _newChemicalShowExpDate: boolean = false;
   private _newChemicalTime: string = "09:00";
   private _newChemicalQuantity: string = "";
+  private _newChemicalQunatityUnit: string = "";
   private _newChemicalModalOpen: boolean = false;
   private _newChemicalAddLoading: boolean = false;
   private _newChemicalError: newChemicalError = {
     name: "",
-    formula: "",
     quantity: "",
+    units: "",
+    cost: "",
+    expiryDate: "",
+    manufactureDate: "",
   };
   private _updateChemicalError: updateChemicalError = {
     lab: "",
     quantity: "",
+    cost: "",
+    expiryDate: "",
+    manufactureDate: "",
+    batch: "",
   };
   private _updateChemicalLoading: boolean = false;
   private _selectedChemical: Chemical | null = null;
@@ -40,21 +60,52 @@ export class ChemicalModel {
   private _updateChemicalQuantity: string = "";
   private _updateChemicalDate: string = new Date().toISOString().split("T")[0];
   private _updateChemicalTime: string = "09:00";
+  private _updateChemicalCost: string = "";
+  private _updateChemicalMfgDate: string = "";
+  private _updateChemicalExpDate: string = "";
+  private _updateChemicalShowExpDate: boolean = false;
   private _updateChemicalLab: string = "";
+  private _updateChemicalBatch: string = "";
   private _showRemoveChemicalModal: boolean = false;
   private _showAddChemicalModal: boolean = false;
-  private _showViewChemicalLogModal: boolean = false;
+  private _showChemicalBatchModal: boolean = false;
+  private _showViewChemicalBatchLogModal: boolean = false;
+  private _selectedChemicalBatchIndex: number = 0;
+
+  public get selectedChemicalBatchIndex(): number {
+    return this._selectedChemicalBatchIndex;
+  }
+  public set selectedChemicalBatchIndex(value: number) {
+    this._selectedChemicalBatchIndex = value;
+  }
 
   private _searchText: string = "";
   private _sortBy: Sort = Sort.INCREASE;
 
+  public get maxQuantity(): string | undefined {
+    return this.selectedChemical?.batches?.[parseInt(this._updateChemicalBatch)]
+      ?.quantity;
+  }
+
+  public get batches(): { id: string; name: string }[] {
+    let arr: { id: string; name: string }[] = [];
+    this.selectedChemical?.batches?.forEach((batch, index) => {
+      if (parseInt(batch.quantity) > 0)
+        arr.push({
+          id: `${index}`,
+          name: `Batch ${index + 1}    ${batch.manufacturingDate} - ${
+            batch.expiryDate ?? "*"
+          }`,
+        });
+    });
+    return arr;
+  }
+
   public get chemicals(): Chemical[] {
     let chemicalsArray: Chemical[];
     if (this.searchText) {
-      chemicalsArray = this._chemicals.filter(
-        (item: Chemical) =>
-          item.name.toLowerCase().includes(this.searchText.toLowerCase()) ||
-          item.formula.toLowerCase().includes(this.searchText.toLowerCase())
+      chemicalsArray = this._chemicals.filter((item: Chemical) =>
+        item.name.toLowerCase().includes(this.searchText.toLowerCase())
       );
     } else {
       chemicalsArray = this._chemicals;
@@ -82,14 +133,14 @@ export class ChemicalModel {
     return this._newChemicalName;
   }
 
-  public set newChemicalFormula(val: string) {
+  public set newChemicalCost(val: string) {
     runInAction(() => {
-      this._newChemicalFormula = val;
-      this._newChemicalError = { ...this._newChemicalError, formula: "" };
+      this._newChemicalCost = val;
+      this._newChemicalError = { ...this._newChemicalError, cost: "" };
     });
   }
-  public get newChemicalFormula() {
-    return this._newChemicalFormula;
+  public get newChemicalCost() {
+    return this._newChemicalCost;
   }
 
   public set newChemicalDate(val: string) {
@@ -99,6 +150,39 @@ export class ChemicalModel {
   }
   public get newChemicalDate() {
     return this._newChemicalDate;
+  }
+
+  public set newChemicalMfgDate(val: string) {
+    runInAction(() => {
+      this._newChemicalMfgDate = val;
+      this._newChemicalError = {
+        ...this._newChemicalError,
+        manufactureDate: "",
+      };
+    });
+  }
+  public get newChemicalMfgDate() {
+    return this._newChemicalMfgDate;
+  }
+
+  public set newChemicalExpDate(val: string) {
+    runInAction(() => {
+      this._newChemicalExpDate = val;
+      this._newChemicalError = { ...this._newChemicalError, expiryDate: "" };
+    });
+  }
+  public get newChemicalExpDate() {
+    return this._newChemicalExpDate;
+  }
+
+  public set newChemicalShowExpDate(val: boolean) {
+    runInAction(() => {
+      this._newChemicalShowExpDate = val;
+      this._newChemicalError = { ...this._newChemicalError, expiryDate: "" };
+    });
+  }
+  public get newChemicalShowExpDate() {
+    return this._newChemicalShowExpDate;
   }
 
   public set newChemicalTime(val: string) {
@@ -119,6 +203,17 @@ export class ChemicalModel {
 
   public get newChemicalQuantity() {
     return this._newChemicalQuantity;
+  }
+
+  public set newChemicalQunatityUnit(val: string) {
+    runInAction(() => {
+      this._newChemicalQunatityUnit = val;
+      this._newChemicalError = { ...this._newChemicalError, units: "" };
+    });
+  }
+
+  public get newChemicalQunatityUnit() {
+    return this._newChemicalQunatityUnit;
   }
 
   public set newChemicalModalOpen(val: boolean) {
@@ -166,6 +261,58 @@ export class ChemicalModel {
     return this._updateChemicalTime;
   }
 
+  public set updateChemicalCost(_val: string) {
+    runInAction(() => {
+      this._updateChemicalCost = _val;
+      this._updateChemicalError = {
+        ...this._updateChemicalError,
+        cost: "",
+      };
+    });
+  }
+  public get updateChemicalCost(): string {
+    return this._updateChemicalCost;
+  }
+
+  public set updateChemicalMfgDate(val: string) {
+    runInAction(() => {
+      this._updateChemicalMfgDate = val;
+      this._updateChemicalError = {
+        ...this._updateChemicalError,
+        manufactureDate: "",
+      };
+    });
+  }
+  public get updateChemicalMfgDate() {
+    return this._updateChemicalMfgDate;
+  }
+
+  public set updateChemicalExpDate(val: string) {
+    runInAction(() => {
+      this._updateChemicalExpDate = val;
+      this._updateChemicalError = {
+        ...this._updateChemicalError,
+        expiryDate: "",
+      };
+    });
+  }
+  public get updateChemicalExpDate() {
+    return this._updateChemicalExpDate;
+  }
+
+  public set updateChemicalShowExpDate(val: boolean) {
+    runInAction(() => {
+      this._updateChemicalShowExpDate = val;
+      this._updateChemicalError = {
+        ...this._updateChemicalError,
+        expiryDate: "",
+      };
+    });
+  }
+  public get updateChemicalShowExpDate() {
+    return this._updateChemicalShowExpDate;
+  }
+
   public set updateChemicalQuantity(_val: string) {
     runInAction(() => {
       this._updateChemicalQuantity = _val;
@@ -190,6 +337,19 @@ export class ChemicalModel {
   }
   public get updateChemicalLab(): string {
     return this._updateChemicalLab;
+  }
+
+  public set updateChemicalBatch(_val: string) {
+    runInAction(() => {
+      this._updateChemicalBatch = _val;
+      this._updateChemicalError = {
+        ...this._updateChemicalError,
+        batch: "",
+      };
+    });
+  }
+  public get updateChemicalBatch(): string {
+    return this._updateChemicalBatch;
   }
 
   public set showRemoveChemicalModal(_val: boolean) {
@@ -219,13 +379,22 @@ export class ChemicalModel {
     return this._selectedChemical;
   }
 
-  public set showViewChemicalLogModal(_val: boolean) {
+  public set showChemicalBatchModal(_val: boolean) {
     runInAction(() => {
-      this._showViewChemicalLogModal = _val;
+      this._showChemicalBatchModal = _val;
     });
   }
-  public get showViewChemicalLogModal(): boolean {
-    return this._showViewChemicalLogModal;
+  public get showChemicalBatchModal(): boolean {
+    return this._showChemicalBatchModal;
+  }
+
+  public set showViewChemicalBatchLogModal(_val: boolean) {
+    runInAction(() => {
+      this._showViewChemicalBatchLogModal = _val;
+    });
+  }
+  public get showViewChemicalBatchLogModal(): boolean {
+    return this._showViewChemicalBatchLogModal;
   }
 
   public get updateChemicalError(): updateChemicalError {
@@ -274,14 +443,23 @@ export class ChemicalModel {
     runInAction(() => {
       this._newChemicalName = "";
       this._newChemicalQuantity = "";
+      this._newChemicalQunatityUnit = "";
       this._newChemicalDate = new Date().toISOString().split("T")[0];
       this._newChemicalTime = "09:00";
-      this._newChemicalFormula = "";
+      this._newChemicalCost = "";
+      this._newChemicalExpDate = "";
+      this._newChemicalMfgDate = "";
+      this._newChemicalShowExpDate = false;
 
       this._updateChemicalDate = new Date().toISOString().split("T")[0];
       this._updateChemicalTime = "09:00";
       this._updateChemicalQuantity = "";
       this._updateChemicalLab = "";
+      this._updateChemicalBatch = "";
+      this._updateChemicalCost = "";
+      this._updateChemicalExpDate = "";
+      this._updateChemicalMfgDate = "";
+      this._updateChemicalShowExpDate = false;
     });
   }
 }

@@ -14,33 +14,63 @@ export class Chemicals {
   }
 
   public onAddNewChemical = async () => {
-    let error: newChemicalError = { name: "", formula: "", quantity: "" };
+    let error: newChemicalError = {
+      name: "",
+      quantity: "",
+      units: "",
+      cost: "",
+      expiryDate: "",
+      manufactureDate: "",
+    };
     if (this.chemicalModel?.newChemicalName?.length === 0) {
       error.name = "This is a mandatory field";
     }
-    if (this.chemicalModel?.newChemicalFormula?.length === 0) {
-      error.formula = "This is a mandatory field";
+    if (this.chemicalModel?.newChemicalCost?.length === 0) {
+      error.cost = "This is a mandatory field";
     }
     if (!this.chemicalModel?.newChemicalQuantity) {
       error.quantity = "This is a mandatory field";
     }
-    if (!error.name && !error.formula && !error.quantity) {
+    if (!this.chemicalModel?.newChemicalQunatityUnit) {
+      error.units = "This is a mandatory field";
+    }
+    if (!this.chemicalModel.newChemicalMfgDate) {
+      error.manufactureDate = "This is a mandatory field";
+    }
+    if (
+      this.chemicalModel.newChemicalShowExpDate &&
+      !this.chemicalModel.newChemicalExpDate
+    ) {
+      error.expiryDate = "This is a mandatory field";
+    }
+    if (
+      !error.name &&
+      !error.cost &&
+      !error.quantity &&
+      !error.units &&
+      !error.expiryDate &&
+      !error.manufactureDate
+    ) {
       try {
         this.chemicalModel.newChemicalAddLoading = true;
         await addStoreChemical({
           name: this.chemicalModel?.newChemicalName,
-          formula: this.chemicalModel?.newChemicalFormula,
-          timestamp: new Date(
-            `${this.chemicalModel?.newChemicalDate}T${this.chemicalModel?.newChemicalTime}`
-          ),
+          timestamp: new Date(`${this.chemicalModel?.newChemicalDate}`),
           quantity: this.chemicalModel?.newChemicalQuantity,
           action: UpdateActions.ADD,
+          cost: this.chemicalModel.newChemicalCost,
+          expDate: this.chemicalModel.newChemicalShowExpDate
+            ? new Date(this.chemicalModel.newChemicalExpDate)
+            : undefined,
+          mfgDate: new Date(this.chemicalModel.newChemicalMfgDate),
+          units: this.chemicalModel.newChemicalQunatityUnit,
         });
         this.chemicalModel.newChemicalModalOpen = false;
         this.chemicalModel.newChemicalAddLoading = false;
         this.chemicalModel.resetValues();
       } catch (e) {
-        this.chemicalModel.newChemicalAddLoading = true;
+        this.chemicalModel.newChemicalAddLoading = false;
+        console.log("error", e);
       }
     } else {
       runInAction(() => {
@@ -50,43 +80,83 @@ export class Chemicals {
   };
 
   public onUpdateChemical = async (action: UpdateActions) => {
-    let error: updateChemicalError = { lab: "", quantity: "" };
+    let error: updateChemicalError = {
+      lab: "",
+      quantity: "",
+      cost: "",
+      expiryDate: "",
+      manufactureDate: "",
+      batch: "",
+    };
     if (!this.chemicalModel.updateChemicalQuantity) {
       error.quantity = "This is a mandatory field";
     }
-    if (
-      !this.chemicalModel.updateChemicalLab &&
-      action === UpdateActions.DELETE
-    ) {
-      error.lab = "This is a mandatory field";
+    if (action === UpdateActions.DELETE) {
+      if (!this.chemicalModel.updateChemicalLab) {
+        error.lab = "This is a mandatory field";
+      }
+      if (!this.chemicalModel.updateChemicalBatch) {
+        error.batch = "This is a mandatory field";
+      }
+      if (this.chemicalModel.maxQuantity) {
+        if (
+          parseInt(this.chemicalModel.updateChemicalQuantity) >
+          parseInt(this.chemicalModel.maxQuantity)
+        ) {
+          error.quantity = "This exceeds the maximum quantity";
+        }
+      }
+    }
+    if (action === UpdateActions.ADD) {
+      if (!this.chemicalModel.updateChemicalCost) {
+        error.cost = "This is a mandatory field";
+      }
+      if (!this.chemicalModel.updateChemicalMfgDate) {
+        error.manufactureDate = "This is a mandatory field";
+      }
+      if (
+        this.chemicalModel.updateChemicalShowExpDate &&
+        !this.chemicalModel.updateChemicalExpDate
+      ) {
+        error.expiryDate = "This is a mandatory field";
+      }
     }
     if (
       !error.quantity &&
-      (action === UpdateActions.DELETE ? !error.lab : true)
+      !error.cost &&
+      !error.expiryDate &&
+      !error.manufactureDate &&
+      (action === UpdateActions.DELETE ? !error.lab : true) &&
+      (action === UpdateActions.DELETE ? !error.batch : true)
     ) {
       try {
         this.chemicalModel.updateChemicalLoading = true;
         const quantity = this.chemicalModel.updateChemicalQuantity;
-        let remQuantity = this?.chemicalModel.selectedChemical?.quantity;
-        if (action === UpdateActions.ADD) {
-          remQuantity = `${Number(remQuantity) + Number(quantity)}`;
-        } else {
-          remQuantity = `${Number(remQuantity) - Number(quantity)}`;
-        }
+        let remQuantity = quantity;
+        // this?.chemicalModel.selectedChemical?.quantity;
+        // if (action === UpdateActions.ADD) {
+        //   remQuantity = `${Number(remQuantity) + Number(quantity)}`;
+        // } else {
+        //   remQuantity = `${Number(remQuantity) - Number(quantity)}`;
+        // }
 
         await updateStoreChemicals({
           action: action,
           name: this.chemicalModel.selectedChemical?.name || "",
-          formula: this.chemicalModel.selectedChemical?.formula || "",
           id: this.chemicalModel.selectedChemical?.id || "",
           quantity: this.chemicalModel.updateChemicalQuantity,
           remainingQuantity: remQuantity,
-          timestamp: new Date(
-            `${this.chemicalModel.updateChemicalDate}T${this.chemicalModel.updateChemicalTime}`
-          ),
+          timestamp: new Date(`${this.chemicalModel.updateChemicalDate}`),
           lab: this.root.laboratory.labModel.labsForSelect.filter(
             (item) => item.id === this.chemicalModel.updateChemicalLab
           )?.[0],
+          cost: this.chemicalModel.updateChemicalCost,
+          mfgDate: new Date(this.chemicalModel.updateChemicalMfgDate),
+          expDate: this.chemicalModel.updateChemicalShowExpDate
+            ? new Date(this.chemicalModel.updateChemicalExpDate)
+            : undefined,
+          batchId: this.chemicalModel.updateChemicalBatch,
+          units: this.chemicalModel.selectedChemical?.units || "",
         });
         this.chemicalModel.updateChemicalLoading = false;
         this.chemicalModel.showAddChemicalModal = false;
@@ -95,6 +165,7 @@ export class Chemicals {
         this.chemicalModel.resetValues();
       } catch (e) {
         this.chemicalModel.updateChemicalLoading = false;
+        console.log("error", e);
       }
     } else {
       runInAction(() => {

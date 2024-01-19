@@ -21,6 +21,8 @@ const RemoveQuantityModalComp = ({ isFromStorePage }: Props) => {
   const selectedTime = chemicalModel?.updateChemicalTime;
   const selectedLab = chemicalModel?.updateChemicalLab;
   const labs = store.laboratory?.labModel?.labsForSelect;
+  const batches = chemicalModel?.batches;
+  const selectedBatch = chemicalModel?.updateChemicalBatch;
 
   return (
     showModal && (
@@ -28,8 +30,18 @@ const RemoveQuantityModalComp = ({ isFromStorePage }: Props) => {
         <div className="fixed inset-0 bg-black opacity-50"></div>
 
         <div className="bg-white p-6 rounded-lg max-w-md w-full relative">
-          <h2 className="text-xl font-bold mb-4">{`Remove Quantity for ${chemical?.name} (${chemical?.formula})`}</h2>
+          <h2 className="text-xl font-bold mb-4">{`Remove Quantity for ${chemical?.name}`}</h2>
 
+          <Dropdown
+            title={"Select Batch"}
+            value={selectedBatch}
+            error={chemicalModel.updateChemicalError.batch}
+            fieldId={"batch"}
+            onChangeValue={(val: string) =>
+              (chemicalModel.updateChemicalBatch = val)
+            }
+            values={batches}
+          />
           <NumberComp
             title="Quantity to Remove"
             fieldId="quantityToRemove"
@@ -38,12 +50,23 @@ const RemoveQuantityModalComp = ({ isFromStorePage }: Props) => {
               (chemicalModel.updateChemicalQuantity = val)
             }
             value={quantity}
+            quantatiyTitle={"Unit(s)"}
+            quantatiyValue={chemicalModel?.selectedChemical?.units || ""}
+            quantatiyError={""}
+            quantatiyFieldId={"units"}
+            onQuantatiyChangeValue={(val: string) => null}
+            showDisabledQuantity={true}
+            maxQuantityValue={chemicalModel?.maxQuantity}
           />
           <DateComp
             selectedDate={selectedDate}
             selectedTime={selectedTime}
             setSelectedDate={(val) => (chemicalModel.updateChemicalDate = val)}
             setSelectedTime={(val) => (chemicalModel.updateChemicalTime = val)}
+            showCost={false}
+            chemicalCost={""}
+            setChemicalCost={(val: string) => null}
+            chemicalCostError={""}
           />
           {isFromStorePage && (
             <Dropdown
@@ -52,7 +75,7 @@ const RemoveQuantityModalComp = ({ isFromStorePage }: Props) => {
               error={chemicalModel.updateChemicalError.lab}
               fieldId={"labDropdown"}
               onChangeValue={(val) => (chemicalModel.updateChemicalLab = val)}
-              labs={labs}
+              values={labs}
             />
           )}
           <div className="flex justify-center">

@@ -7,10 +7,13 @@ export enum UpdateActions {
 }
 export interface AddStoreChemicalRequest {
   name: string;
-  formula: string;
   quantity: string;
+  units: string;
   timestamp: Date;
   action: UpdateActions;
+  mfgDate: Date;
+  expDate?: Date;
+  cost: string;
 }
 
 export interface ChemicalResponseLog {
@@ -23,8 +26,17 @@ export interface ChemicalResponseLog {
 export interface Chemical {
   id: string;
   name: string;
-  formula: string;
+  units: string;
   quantity: string;
+  overallCost: string;
+  batches: Batch[];
+}
+export interface Batch {
+  initialQuantity: string;
+  quantity: string;
+  cost: string;
+  manufacturingDate: string;
+  expiryDate?: string;
   logs: ChemicalLogUI[];
 }
 
@@ -44,7 +56,11 @@ export interface UpdateStoreChemicalRequest {
   timestamp: Date;
   lab?: SelectLab;
   name: string;
-  formula: string;
+  mfgDate: Date;
+  expDate?: Date;
+  cost: string;
+  batchId?: string;
+  units: string;
 }
 
 export enum Sort {

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { AddQuantityModal } from "./QuantityModal";
 import { RemoveQuantityModal } from "./RemoveQuantity";
-import { ViewLogsModal } from "./ViewLogModal";
 import { ArrowDown, ArrowUp } from "react-feather";
 import { AddChemicalModal } from "./AddChemicalModal";
 import { useStore } from "@/store";
 import { observer } from "mobx-react-lite";
 import { SearchBox } from "..";
 import { Sort } from "@/types";
+import { ViewBatchModal } from "./ViewBatchModal";
 
 interface ChemicalTableCompProps {
   from: "ALL" | "SINGLE";
@@ -48,7 +48,6 @@ const ChemicalTableComp = ({ from }: ChemicalTableCompProps) => {
         <thead>
           <tr>
             <th className="py-4 px-6 text-center">Name</th>
-            <th className="py-4 px-6 text-center">Formula</th>
             <th
               className="py-4 px-6 text-center cursor-pointer"
               onClick={() => chemicalModel.alterSortBy()}
@@ -60,6 +59,7 @@ const ChemicalTableComp = ({ from }: ChemicalTableCompProps) => {
                 </span>
               </div>
             </th>
+            <th className="py-4 px-6 text-center">Overall Cost</th>
             <th className="py-4 px-6 text-center">Actions</th>
           </tr>
         </thead>
@@ -70,8 +70,10 @@ const ChemicalTableComp = ({ from }: ChemicalTableCompProps) => {
               className={index % 2 === 0 ? "bg-gray-100" : ""}
             >
               <td className="py-4 px-6 text-center">{chemical.name}</td>
-              <td className="py-4 px-6 text-center">{chemical.formula}</td>
-              <td className="py-4 px-6 text-center">{chemical.quantity}</td>
+              <td className="py-4 px-6 text-center">
+                {chemical.quantity} {chemical.units}
+              </td>
+              <td className="py-4 px-6 text-center">{chemical?.overallCost}</td>
               <td className="py-4 px-6 text-center">
                 {isFromStorePage && (
                   <button
@@ -97,10 +99,10 @@ const ChemicalTableComp = ({ from }: ChemicalTableCompProps) => {
                   className="bg-gray-500 text-white px-2 py-1 rounded ml-2"
                   onClick={() => {
                     chemicalModel.selectedChemical = chemical;
-                    chemicalModel.showViewChemicalLogModal = true;
+                    chemicalModel.showChemicalBatchModal = true;
                   }}
                 >
-                  View Logs
+                  View Batches
                 </button>
               </td>
             </tr>
@@ -114,8 +116,8 @@ const ChemicalTableComp = ({ from }: ChemicalTableCompProps) => {
       {/* Show Remove Quantity Modal */}
       <RemoveQuantityModal isFromStorePage={isFromStorePage} />
 
-      {/* Show View Logs Modal */}
-      <ViewLogsModal isFromStorePage={isFromStorePage} />
+      {/* Show View Batches Modal */}
+      <ViewBatchModal isFromStorePage={isFromStorePage} />
 
       {/*Show Add chemical modal */}
       <AddChemicalModal isFromStorePage={isFromStorePage} />

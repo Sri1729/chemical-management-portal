@@ -7,6 +7,7 @@ import {
   ChemicalLogUI,
   UpdateActions,
   UpdateStoreChemicalRequest,
+  Batch,
 } from "@/types";
 import {
   collection,
@@ -23,20 +24,36 @@ import {
 
 export const addStoreChemical = async ({
   name,
-  formula,
   quantity,
   timestamp,
   action,
+  units,
+  expDate,
+  mfgDate,
+  cost,
 }: AddStoreChemicalRequest) => {
-  await addDoc(collection(db, "storeChemicals"), {
+  // Get the collection reference for chemicals
+  const chemicalsCollection = collection(db, "storeChemicals");
+
+  // Add a new document with an auto-generated ID
+  await addDoc(chemicalsCollection, {
     name: name,
-    formula: formula,
-    quantity: quantity,
-    logs: [
+    units: units,
+    batches: [
       {
-        timestamp: timestamp,
-        action: action,
+        batchNo: 1,
+        initialQuantity: quantity,
         quantity: quantity,
+        ...(expDate !== undefined && { expiryDate: expDate }),
+        manufacturingDate: mfgDate,
+        cost: cost,
+        logs: [
+          {
+            timestamp: timestamp,
+            action: action,
+            quantity: quantity,
+          },
+        ],
       },
     ],
   });
@@ -51,18 +68,56 @@ export const getRealTimeUpdates = (setData: (data: Chemical[]) => void) => {
         return {
           id: doc.id,
           name: values?.name,
-          formula: values?.formula,
-          quantity: values?.quantity,
-          logs: processLogs(values?.logs),
+          units: values?.units,
+          quantity: getOverallQuantity(values?.batches),
+          batches: processBatches(values?.batches),
+          overallCost: getOverallCost(values?.batches),
         };
       });
+
       setData(newData);
     },
     (error) => {
       console.log("Error getting documents:", error);
     }
   );
+
   return unsubscribe;
+};
+export const getOverallQuantity = (batches: any[]) => {
+  let sum = 0;
+  batches?.forEach((batch) => {
+    sum += parseInt(batch?.quantity);
+  });
+  return `${sum}`;
+};
+
+export const getOverallCost = (batches: any[]) => {
+  let sum = 0;
+  batches?.forEach((batch) => {
+    sum += parseInt(batch?.cost);
+  });
+  return `${sum}`;
+};
+// Process batches for a single chemical
+export const processBatches = (batches: any[]): Batch[] => {
+  return batches?.map((batch) => {
+    return {
+      quantity: batch.quantity,
+      initialQuantity: batch.initialQuantity,
+      units: batch.units,
+      cost: batch.cost,
+      manufacturingDate: new Date(
+        batch?.manufacturingDate?.seconds * 1000
+      ).toLocaleDateString("en-GB"),
+      expiryDate: batch?.expiryDate
+        ? new Date(batch?.expiryDate?.seconds * 1000).toLocaleDateString(
+            "en-GB"
+          )
+        : undefined,
+      logs: processLogs(batch.logs),
+    };
+  });
 };
 
 export const processLogs = (logs: ChemicalResponseLog[]): ChemicalLogUI[] => {
@@ -92,10 +147,16 @@ export const updateStoreChemicals = async ({
   remainingQuantity,
   timestamp,
   lab,
-  formula,
   name,
+  cost,
+  mfgDate,
+  expDate,
+  batchId,
+  units,
 }: UpdateStoreChemicalRequest) => {
   const docRef = await doc(db, "storeChemicals", id);
+  const data = (await getDoc(docRef)).data();
+
   const uuidKey = uuidv4();
   const log =
     action === UpdateActions.ADD
@@ -113,36 +174,132 @@ export const updateStoreChemicals = async ({
           lab: lab?.name,
         };
 
-  await setDoc(
-    docRef,
-    {
-      quantity: remainingQuantity,
-      logs: arrayUnion(log),
-    },
-    { merge: true }
-  );
+  if (action === UpdateActions.ADD) {
+    const batch = {
+      batchNo: data?.batches?.length + 1,
+      initialQuantity: quantity,
+      quantity: quantity,
+      manufacturingDate: mfgDate,
+      cost: cost,
+      ...(expDate !== undefined && { expiryDate: expDate }),
+      logs: [log],
+    };
+    await setDoc(
+      docRef,
+      {
+        batches: arrayUnion(batch),
+      },
+      { merge: true }
+    );
+  }
+  if (action === UpdateActions.DELETE) {
+    const updatedBatches = [...data?.batches];
+    if (batchId) {
+      const selectedBatch = updatedBatches?.[parseInt(batchId)];
+      selectedBatch.logs = [...selectedBatch.logs, log];
+      selectedBatch.quantity = `${
+        parseInt(selectedBatch.quantity) - parseInt(quantity)
+      }`;
+      updatedBatches[parseInt(batchId)] = selectedBatch;
+      await setDoc(docRef, { batches: updatedBatches }, { merge: true });
+    }
+  }
 
   // add this to the labChemicals
   if (action === UpdateActions.DELETE) {
+    // Get doc ref
     const labRef = doc(db, "labChemicals", lab?.id || "", "chemicals", id);
     const docSnap = await getDoc(labRef);
-    if (docSnap.exists()) {
-      // The document exists, increase the quantity and add a log
-      await updateDoc(labRef, {
-        quantity: `${Number(docSnap?.data()?.quantity) + Number(quantity)}`, // replace with your increment value
-        logs: arrayUnion({
-          id: uuidKey,
-          timestamp: timestamp,
-          action: UpdateActions.ADD,
-          quantity: quantity,
-        }),
-      });
+    const actualBatch = data?.batches?.[parseInt(batchId || "0")];
+    const actualBatchCost = actualBatch?.cost;
+    const actualBatchInitialQuantity = actualBatch?.initialQuantity;
+
+    // check if we have the chemical
+    if (docSnap.exists() && docSnap.data()) {
+      const existingData = docSnap.data();
+
+      // Check if the batch number exists, if yes we append to the logs
+      if (existingData?.batches) {
+        const existingBatchIndex = existingData.batches.findIndex(
+          (batch: any) => batch.batchNo === `${parseInt(batchId || "0") + 1}`
+        );
+
+        if (existingBatchIndex !== -1) {
+          // Batch with the given batch number already exists, add log to that batch
+          const updatedBatches = [...existingData.batches];
+          const selectedBatch = { ...updatedBatches[existingBatchIndex] };
+
+          // append logs
+          selectedBatch.logs = [
+            ...selectedBatch.logs,
+            {
+              id: uuidKey,
+              timestamp: timestamp,
+              action: UpdateActions.ADD,
+              quantity: quantity,
+            },
+          ];
+
+          // update quantity
+          selectedBatch.quantity = `${
+            parseInt(selectedBatch.quantity) + parseInt(quantity)
+          }`;
+
+          // update cost
+          selectedBatch.cost = `${
+            parseFloat(selectedBatch.cost) +
+            (parseFloat(actualBatchCost) * parseFloat(quantity)) /
+              parseFloat(actualBatchInitialQuantity)
+          }`;
+
+          updatedBatches[existingBatchIndex] = selectedBatch;
+
+          // update doc
+          await updateDoc(labRef, {
+            batches: updatedBatches,
+          });
+        } else {
+          // Batch with the given batch number does not exist, create a new batch
+          const newBatch = {
+            batchNo: `${parseInt(batchId || "0") + 1}`,
+            quantity: quantity,
+            manufacturingDate: actualBatch?.manufacturingDate,
+            cost: `${
+              (parseFloat(actualBatchCost) * parseFloat(quantity)) /
+              parseFloat(actualBatchInitialQuantity)
+            }`,
+            ...(actualBatch?.expiryDate !== undefined && {
+              expiryDate: actualBatch?.expiryDate,
+            }),
+            logs: [
+              {
+                id: uuidKey,
+                timestamp: timestamp,
+                action: UpdateActions.ADD,
+                quantity: quantity,
+              },
+            ],
+          };
+
+          // update the doc
+          await updateDoc(labRef, {
+            batches: arrayUnion(newBatch),
+          });
+        }
+      }
     } else {
-      // The document does not exist, create a new document
-      await setDoc(labRef, {
-        name: name,
-        formula: formula,
+      // if no collection or doc, create one
+      const newBatch = {
+        batchNo: `${parseInt(batchId || "0") + 1}`,
         quantity: quantity,
+        manufacturingDate: actualBatch?.manufacturingDate,
+        cost: `${
+          (parseFloat(actualBatchCost) * parseFloat(quantity)) /
+          parseFloat(actualBatchInitialQuantity)
+        }`,
+        ...(actualBatch?.expiryDate !== undefined && {
+          expiryDate: actualBatch?.expiryDate,
+        }),
         logs: [
           {
             id: uuidKey,
@@ -151,6 +308,12 @@ export const updateStoreChemicals = async ({
             quantity: quantity,
           },
         ],
+      };
+      // set the doc
+      await setDoc(labRef, {
+        name: name,
+        units: units,
+        batches: [newBatch],
       });
     }
   }

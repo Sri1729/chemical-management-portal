@@ -1,5 +1,6 @@
 import { db } from "@/firebase";
 import {
+  Batch,
   Chemical,
   CreateLab,
   LabDetails,
@@ -97,9 +98,10 @@ export const getRealTimeIndividualLabUpdates = (
         return {
           id: doc.id,
           name: values?.name,
-          formula: values?.formula,
-          quantity: values?.quantity,
-          logs: processLogs(values?.logs),
+          units: values?.units,
+          quantity: getOverallQuantity(values?.batches),
+          batches: processBatches(values?.batches),
+          overallCost: parseFloat(getOverallCost(values?.batches)).toFixed(2),
         };
       });
       setData(newData);
@@ -109,6 +111,42 @@ export const getRealTimeIndividualLabUpdates = (
     }
   );
   return unsubscribe;
+};
+
+export const getOverallCost = (batches: any[]) => {
+  let sum = 0;
+  batches?.forEach((batch) => {
+    sum += parseFloat(batch?.cost);
+  });
+  return `${sum}`;
+};
+
+export const getOverallQuantity = (batches: any[]) => {
+  let sum = 0;
+  batches?.forEach((batch) => {
+    sum += parseInt(batch?.quantity);
+  });
+  return `${sum}`;
+};
+
+export const processBatches = (batches: any[]): Batch[] => {
+  return batches?.map((batch) => {
+    return {
+      quantity: batch.quantity,
+      units: batch.units,
+      cost: batch.cost,
+      manufacturingDate: new Date(
+        batch?.manufacturingDate?.seconds * 1000
+      ).toLocaleDateString("en-GB"),
+      expiryDate: batch?.expiryDate
+        ? new Date(batch?.expiryDate?.seconds * 1000).toLocaleDateString(
+            "en-GB"
+          )
+        : undefined,
+      logs: processLogs(batch.logs),
+      initialQuantity: batch?.initialQuantity,
+    };
+  });
 };
 
 export const getIndividualLabDetails = async (
@@ -134,19 +172,39 @@ export const updateIndividualLabChemical = async ({
   id,
   quantity,
   timestamp,
+  batchId,
 }: updateIndividualLabChemicalRequest) => {
   const labRef = doc(db, "labChemicals", lab || "", "chemicals", id);
   const docSnap = await getDoc(labRef);
   const uuidKey = uuidv4();
   if (docSnap?.exists()) {
-    await updateDoc(labRef, {
-      quantity: `${Number(docSnap?.data()?.quantity) - Number(quantity)}`, // replace with your increment value
-      logs: arrayUnion({
-        id: uuidKey,
-        timestamp: timestamp,
-        action: UpdateActions.DELETE,
-        quantity: quantity,
-      }),
-    });
+    const existingData = docSnap.data();
+    if (existingData?.batches) {
+      const existingBatchIndex = existingData.batches.findIndex(
+        (batch: any) => batch.batchNo === `${parseInt(batchId || "0") + 1}`
+      );
+
+      if (existingBatchIndex !== -1) {
+        const updatedBatches = [...existingData.batches];
+        const selectedBatch = { ...updatedBatches[existingBatchIndex] };
+        selectedBatch.logs = [
+          ...selectedBatch.logs,
+          {
+            id: uuidKey,
+            timestamp: timestamp,
+            action: UpdateActions.DELETE,
+            quantity: quantity,
+          },
+        ];
+
+        selectedBatch.quantity = `${
+          parseInt(selectedBatch.quantity) - parseInt(quantity)
+        }`;
+
+        updatedBatches[existingBatchIndex] = selectedBatch;
+
+        await updateDoc(labRef, { batches: updatedBatches });
+      }
+    }
   }
 };
