@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { AddQuantityModal } from "./QuantityModal";
 import { RemoveQuantityModal } from "./RemoveQuantity";
-import { ViewLogsModal } from "./ViewLogModal";
 import { ArrowDown, ArrowUp } from "react-feather";
 import { AddChemicalModal } from "./AddChemicalModal";
 import { useStore } from "@/store";
 import { observer } from "mobx-react-lite";
 import { SearchBox } from "..";
 import { Sort } from "@/types";
+import { ViewBatchModal } from "./ViewBatchModal";
 
 interface ChemicalTableCompProps {
   from: "ALL" | "SINGLE";
@@ -99,10 +99,10 @@ const ChemicalTableComp = ({ from }: ChemicalTableCompProps) => {
                   className="bg-gray-500 text-white px-2 py-1 rounded ml-2"
                   onClick={() => {
                     chemicalModel.selectedChemical = chemical;
-                    chemicalModel.showViewChemicalLogModal = true;
+                    chemicalModel.showChemicalBatchModal = true;
                   }}
                 >
-                  View Logs
+                  View Batches
                 </button>
               </td>
             </tr>
@@ -116,8 +116,8 @@ const ChemicalTableComp = ({ from }: ChemicalTableCompProps) => {
       {/* Show Remove Quantity Modal */}
       <RemoveQuantityModal isFromStorePage={isFromStorePage} />
 
-      {/* Show View Logs Modal */}
-      <ViewLogsModal isFromStorePage={isFromStorePage} />
+      {/* Show View Batches Modal */}
+      <ViewBatchModal isFromStorePage={isFromStorePage} />
 
       {/*Show Add chemical modal */}
       <AddChemicalModal isFromStorePage={isFromStorePage} />

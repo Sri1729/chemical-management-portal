@@ -68,7 +68,16 @@ export class ChemicalModel {
   private _updateChemicalBatch: string = "";
   private _showRemoveChemicalModal: boolean = false;
   private _showAddChemicalModal: boolean = false;
-  private _showViewChemicalLogModal: boolean = false;
+  private _showChemicalBatchModal: boolean = false;
+  private _showViewChemicalBatchLogModal: boolean = false;
+  private _selectedChemicalBatchIndex: number = 0;
+
+  public get selectedChemicalBatchIndex(): number {
+    return this._selectedChemicalBatchIndex;
+  }
+  public set selectedChemicalBatchIndex(value: number) {
+    this._selectedChemicalBatchIndex = value;
+  }
 
   private _searchText: string = "";
   private _sortBy: Sort = Sort.INCREASE;
@@ -365,13 +374,22 @@ export class ChemicalModel {
     return this._selectedChemical;
   }
 
-  public set showViewChemicalLogModal(_val: boolean) {
+  public set showChemicalBatchModal(_val: boolean) {
     runInAction(() => {
-      this._showViewChemicalLogModal = _val;
+      this._showChemicalBatchModal = _val;
     });
   }
-  public get showViewChemicalLogModal(): boolean {
-    return this._showViewChemicalLogModal;
+  public get showChemicalBatchModal(): boolean {
+    return this._showChemicalBatchModal;
+  }
+
+  public set showViewChemicalBatchLogModal(_val: boolean) {
+    runInAction(() => {
+      this._showViewChemicalBatchLogModal = _val;
+    });
+  }
+  public get showViewChemicalBatchLogModal(): boolean {
+    return this._showViewChemicalBatchLogModal;
   }
 
   public get updateChemicalError(): updateChemicalError {
