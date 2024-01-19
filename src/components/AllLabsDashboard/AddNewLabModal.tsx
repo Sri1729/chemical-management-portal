@@ -53,6 +53,10 @@ const AddNewLabModalComp = () => {
             selectedTime={selectedTime}
             setSelectedDate={(val) => (labModel.labCreateDate = val)}
             setSelectedTime={(val) => (labModel.labCreationTime = val)}
+            chemicalCost={""}
+            setChemicalCost={(val: string) => null}
+            chemicalCostError={""}
+            showCost={false}
           />
 
           <div className="flex justify-center">
