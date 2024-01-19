@@ -1,5 +1,6 @@
 import { db } from "@/firebase";
 import {
+  Batch,
   Chemical,
   CreateLab,
   LabDetails,
@@ -97,9 +98,10 @@ export const getRealTimeIndividualLabUpdates = (
         return {
           id: doc.id,
           name: values?.name,
-          formula: values?.formula,
-          quantity: values?.quantity,
-          logs: processLogs(values?.logs),
+          units: values?.units,
+          quantity: getOverallQuantity(values?.batches),
+          batches: processBatches(values?.batches),
+          overallCost: "0",
         };
       });
       setData(newData);
@@ -109,6 +111,33 @@ export const getRealTimeIndividualLabUpdates = (
     }
   );
   return unsubscribe;
+};
+
+export const getOverallQuantity = (batches: any[]) => {
+  let sum = 0;
+  batches?.forEach((batch) => {
+    sum += parseInt(batch?.quantity);
+  });
+  return `${sum}`;
+};
+
+export const processBatches = (batches: any[]): Batch[] => {
+  return batches?.map((batch) => {
+    return {
+      quantity: batch.quantity,
+      units: batch.units,
+      cost: batch.cost,
+      manufacturingDate: new Date(
+        batch?.manufacturingDate?.seconds * 1000
+      ).toLocaleDateString("en-GB"),
+      expiryDate: batch?.expiryDate
+        ? new Date(batch?.expiryDate?.seconds * 1000).toLocaleDateString(
+            "en-GB"
+          )
+        : undefined,
+      logs: processLogs(batch.logs),
+    };
+  });
 };
 
 export const getIndividualLabDetails = async (
