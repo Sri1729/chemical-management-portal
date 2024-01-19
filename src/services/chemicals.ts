@@ -249,7 +249,7 @@ export const updateStoreChemicals = async ({
         } else {
           // Batch with the given batch number does not exist, create a new batch
           const newBatch = {
-            batchNo: batchId,
+            batchNo: `${parseInt(batchId || "0") + 1}`,
             quantity: quantity,
             manufacturingDate: actualBatch?.manufacturingDate,
             cost: data?.batches?.[parseInt(batchId || "0")]?.cost,
