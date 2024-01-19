@@ -82,15 +82,21 @@ export class ChemicalModel {
   private _searchText: string = "";
   private _sortBy: Sort = Sort.INCREASE;
 
+  public get maxQuantity(): string | undefined {
+    return this.selectedChemical?.batches?.[parseInt(this._updateChemicalBatch)]
+      ?.quantity;
+  }
+
   public get batches(): { id: string; name: string }[] {
     let arr: { id: string; name: string }[] = [];
     this.selectedChemical?.batches?.forEach((batch, index) => {
-      arr.push({
-        id: `${index}`,
-        name: `Batch ${index + 1}    ${batch.manufacturingDate} - ${
-          batch.expiryDate ?? "*"
-        }`,
-      });
+      if (parseInt(batch.quantity) > 0)
+        arr.push({
+          id: `${index}`,
+          name: `Batch ${index + 1}    ${batch.manufacturingDate} - ${
+            batch.expiryDate ?? "*"
+          }`,
+        });
     });
     return arr;
   }

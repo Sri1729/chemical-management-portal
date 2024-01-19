@@ -98,6 +98,14 @@ export class Chemicals {
       if (!this.chemicalModel.updateChemicalBatch) {
         error.batch = "This is a mandatory field";
       }
+      if (this.chemicalModel.maxQuantity) {
+        if (
+          parseInt(this.chemicalModel.updateChemicalQuantity) >
+          parseInt(this.chemicalModel.maxQuantity)
+        ) {
+          error.quantity = "This exceeds the maximum quantity";
+        }
+      }
     }
     if (action === UpdateActions.ADD) {
       if (!this.chemicalModel.updateChemicalCost) {

@@ -40,7 +40,6 @@ export const ViewLogsModal = ({
             <thead>
               <tr>
                 <th className="py-2 px-4">Date</th>
-                <th className="py-2 px-4">Time</th>
                 <th className="py-2 px-4">Quantity</th>
                 <th className="py-2 px-4">Action</th>
                 {isFromStorePage && (
@@ -55,7 +54,6 @@ export const ViewLogsModal = ({
                   className={index % 2 === 0 ? "bg-gray-100" : ""}
                 >
                   <td className="py-2 px-4 text-center">{log.date}</td>
-                  <td className="py-2 px-4 text-center">{log.time}</td>
                   <td className="py-2 px-4 text-center">{log.quantity}</td>
                   <td className="py-2 px-4 text-center">{log.action}</td>
                   {isFromStorePage && (

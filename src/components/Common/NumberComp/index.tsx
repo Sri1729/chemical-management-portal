@@ -12,6 +12,7 @@ interface NumberCompProps {
   quantatiyFieldId: string;
   onQuantatiyChangeValue: (val: string) => void;
   showDisabledQuantity?: boolean;
+  maxQuantityValue?: string;
 }
 
 export const NumberComp = ({
@@ -26,6 +27,7 @@ export const NumberComp = ({
   quantatiyTitle,
   quantatiyValue,
   showDisabledQuantity = false,
+  maxQuantityValue,
 }: NumberCompProps) => {
   return (
     <div className="mb-4 flex">
@@ -40,6 +42,7 @@ export const NumberComp = ({
           type="number"
           value={value}
           min={0}
+          max={maxQuantityValue}
           onChange={(e) => onChangeValue(e.target.value)}
           placeholder="Quantity"
           id={fieldId}

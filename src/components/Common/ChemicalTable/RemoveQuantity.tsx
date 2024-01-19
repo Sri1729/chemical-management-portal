@@ -56,6 +56,7 @@ const RemoveQuantityModalComp = ({ isFromStorePage }: Props) => {
             quantatiyFieldId={"units"}
             onQuantatiyChangeValue={(val: string) => null}
             showDisabledQuantity={true}
+            maxQuantityValue={chemicalModel?.maxQuantity}
           />
           <DateComp
             selectedDate={selectedDate}
