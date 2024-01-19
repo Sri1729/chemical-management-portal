@@ -27,6 +27,8 @@ export interface Chemical {
   id: string;
   name: string;
   units: string;
+  quantity: string;
+  overallCost: string;
   batches: Batch[];
 }
 export interface Batch {

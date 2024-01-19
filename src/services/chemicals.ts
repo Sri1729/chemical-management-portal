@@ -77,7 +77,9 @@ export const getRealTimeUpdates = (setData: (data: Chemical[]) => void) => {
           id: doc.id,
           name: values?.name,
           units: values?.units,
+          quantity: getOverallQuantity(values?.batches),
           batches: processBatches(values?.batches),
+          overallCost: getOverallCost(values?.batches),
         };
       });
 
@@ -90,7 +92,21 @@ export const getRealTimeUpdates = (setData: (data: Chemical[]) => void) => {
 
   return unsubscribe;
 };
+export const getOverallQuantity = (batches: any[]) => {
+  let sum = 0;
+  batches?.forEach((batch) => {
+    sum += parseInt(batch?.quantity);
+  });
+  return `${sum}`;
+};
 
+export const getOverallCost = (batches: any[]) => {
+  let sum = 0;
+  batches?.forEach((batch) => {
+    sum += parseInt(batch?.cost);
+  });
+  return `${sum}`;
+};
 // Process batches for a single chemical
 export const processBatches = (batches: any[]): Batch[] => {
   return batches?.map((batch) => {

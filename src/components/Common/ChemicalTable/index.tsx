@@ -48,7 +48,6 @@ const ChemicalTableComp = ({ from }: ChemicalTableCompProps) => {
         <thead>
           <tr>
             <th className="py-4 px-6 text-center">Name</th>
-            <th className="py-4 px-6 text-center">Formula</th>
             <th
               className="py-4 px-6 text-center cursor-pointer"
               onClick={() => chemicalModel.alterSortBy()}
@@ -60,6 +59,7 @@ const ChemicalTableComp = ({ from }: ChemicalTableCompProps) => {
                 </span>
               </div>
             </th>
+            <th className="py-4 px-6 text-center">Overall Cost</th>
             <th className="py-4 px-6 text-center">Actions</th>
           </tr>
         </thead>
@@ -70,8 +70,10 @@ const ChemicalTableComp = ({ from }: ChemicalTableCompProps) => {
               className={index % 2 === 0 ? "bg-gray-100" : ""}
             >
               <td className="py-4 px-6 text-center">{chemical.name}</td>
-              <td className="py-4 px-6 text-center">{chemical.formula}</td>
-              <td className="py-4 px-6 text-center">{chemical.quantity}</td>
+              <td className="py-4 px-6 text-center">
+                {chemical.quantity} {chemical.units}
+              </td>
+              <td className="py-4 px-6 text-center">{chemical?.overallCost}</td>
               <td className="py-4 px-6 text-center">
                 {isFromStorePage && (
                   <button
