@@ -11,6 +11,7 @@ interface NumberCompProps {
   quantatiyError: string;
   quantatiyFieldId: string;
   onQuantatiyChangeValue: (val: string) => void;
+  showDisabledQuantity?: boolean;
 }
 
 export const NumberComp = ({
@@ -24,6 +25,7 @@ export const NumberComp = ({
   quantatiyFieldId,
   quantatiyTitle,
   quantatiyValue,
+  showDisabledQuantity = false,
 }: NumberCompProps) => {
   return (
     <div className="mb-4 flex">
@@ -39,7 +41,7 @@ export const NumberComp = ({
           value={value}
           min={0}
           onChange={(e) => onChangeValue(e.target.value)}
-          placeholder="Initial Quantity"
+          placeholder="Quantity"
           id={fieldId}
           className={`w-full h-full border ${
             error ? "border-red-500" : "border-gray-300"
@@ -60,8 +62,11 @@ export const NumberComp = ({
           value={quantatiyValue}
           onChange={(e) => onQuantatiyChangeValue(e.target.value)}
           className={`w-full h-full border ${
-            error ? "border-red-500" : "border-gray-300"
-          } rounded py-2 px-3 focus:border-blue-500 outline-none`}
+            quantatiyError ? "border-red-500" : "border-gray-300"
+          } rounded py-2 px-3 focus:border-blue-500 outline-none ${
+            showDisabledQuantity ? "cursor-not-allowed bg-gray-200" : ""
+          }`}
+          disabled={showDisabledQuantity}
         >
           <option value="">Units</option>
           {qunatity_units.map((item) => (

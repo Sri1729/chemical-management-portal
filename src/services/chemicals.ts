@@ -7,6 +7,7 @@ import {
   ChemicalLogUI,
   UpdateActions,
   UpdateStoreChemicalRequest,
+  Batch,
 } from "@/types";
 import {
   collection,
@@ -47,11 +48,10 @@ export const addStoreChemical = async ({
   // Add a new document with an auto-generated ID
   await addDoc(chemicalsCollection, {
     name: name,
+    units: units,
     batches: [
       {
-        batchNumber: 1,
         quantity: quantity,
-        units: units,
         ...(expDate !== undefined && { expiryDate: expDate }),
         manufacturingDate: mfgDate,
         cost: cost,
@@ -76,18 +76,37 @@ export const getRealTimeUpdates = (setData: (data: Chemical[]) => void) => {
         return {
           id: doc.id,
           name: values?.name,
-          formula: values?.formula,
-          quantity: values?.quantity,
-          logs: processLogs(values?.logs),
+          units: values?.units,
+          batches: processBatches(values?.batches),
         };
       });
+
       setData(newData);
     },
     (error) => {
       console.log("Error getting documents:", error);
     }
   );
+
   return unsubscribe;
+};
+
+// Process batches for a single chemical
+export const processBatches = (batches: any[]): Batch[] => {
+  return batches?.map((batch) => {
+    return {
+      quantity: batch.quantity,
+      units: batch.units,
+      cost: batch.cost,
+      manufacturingDate: new Date(
+        batch?.manufacturingDate?.seconds * 1000
+      ).toLocaleDateString("en-GB"),
+      expiryDate: new Date(
+        batch?.expiryDate?.seconds * 1000
+      ).toLocaleDateString("en-GB"),
+      logs: processLogs(batch.logs),
+    };
+  });
 };
 
 export const processLogs = (logs: ChemicalResponseLog[]): ChemicalLogUI[] => {
@@ -117,8 +136,10 @@ export const updateStoreChemicals = async ({
   remainingQuantity,
   timestamp,
   lab,
-  formula,
   name,
+  cost,
+  mfgDate,
+  expDate,
 }: UpdateStoreChemicalRequest) => {
   const docRef = await doc(db, "storeChemicals", id);
   const uuidKey = uuidv4();
@@ -138,11 +159,26 @@ export const updateStoreChemicals = async ({
           lab: lab?.name,
         };
 
+  const batch = {
+    quantity: quantity,
+    manufacturingDate: mfgDate,
+    cost: cost,
+    ...(expDate !== undefined && { expiryDate: expDate }),
+    logs: [
+      {
+        id: uuidKey,
+        timestamp: timestamp,
+        action: action,
+        quantity: quantity,
+        ...(lab?.name && { lab: lab?.name }),
+      },
+    ],
+  };
+  console.log("batch", batch);
   await setDoc(
     docRef,
     {
-      quantity: remainingQuantity,
-      logs: arrayUnion(log),
+      batches: arrayUnion(batch),
     },
     { merge: true }
   );
@@ -166,7 +202,6 @@ export const updateStoreChemicals = async ({
       // The document does not exist, create a new document
       await setDoc(labRef, {
         name: name,
-        formula: formula,
         quantity: quantity,
         logs: [
           {

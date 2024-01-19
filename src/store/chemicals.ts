@@ -82,7 +82,13 @@ export class Chemicals {
   };
 
   public onUpdateChemical = async (action: UpdateActions) => {
-    let error: updateChemicalError = { lab: "", quantity: "" };
+    let error: updateChemicalError = {
+      lab: "",
+      quantity: "",
+      cost: "",
+      expiryDate: "",
+      manufactureDate: "",
+    };
     if (!this.chemicalModel.updateChemicalQuantity) {
       error.quantity = "This is a mandatory field";
     }
@@ -92,24 +98,39 @@ export class Chemicals {
     ) {
       error.lab = "This is a mandatory field";
     }
+    if (!this.chemicalModel.updateChemicalCost) {
+      error.cost = "This is a mandatory field";
+    }
+    if (!this.chemicalModel.updateChemicalMfgDate) {
+      error.manufactureDate = "This is a mandatory field";
+    }
+    if (
+      this.chemicalModel.updateChemicalShowExpDate &&
+      !this.chemicalModel.updateChemicalExpDate
+    ) {
+      error.expiryDate = "This is a mandatory field";
+    }
     if (
       !error.quantity &&
+      !error.cost &&
+      !error.expiryDate &&
+      !error.manufactureDate &&
       (action === UpdateActions.DELETE ? !error.lab : true)
     ) {
       try {
         this.chemicalModel.updateChemicalLoading = true;
         const quantity = this.chemicalModel.updateChemicalQuantity;
-        let remQuantity = this?.chemicalModel.selectedChemical?.quantity;
-        if (action === UpdateActions.ADD) {
-          remQuantity = `${Number(remQuantity) + Number(quantity)}`;
-        } else {
-          remQuantity = `${Number(remQuantity) - Number(quantity)}`;
-        }
+        let remQuantity = quantity;
+        // this?.chemicalModel.selectedChemical?.quantity;
+        // if (action === UpdateActions.ADD) {
+        //   remQuantity = `${Number(remQuantity) + Number(quantity)}`;
+        // } else {
+        //   remQuantity = `${Number(remQuantity) - Number(quantity)}`;
+        // }
 
         await updateStoreChemicals({
           action: action,
           name: this.chemicalModel.selectedChemical?.name || "",
-          formula: this.chemicalModel.selectedChemical?.formula || "",
           id: this.chemicalModel.selectedChemical?.id || "",
           quantity: this.chemicalModel.updateChemicalQuantity,
           remainingQuantity: remQuantity,
@@ -119,6 +140,11 @@ export class Chemicals {
           lab: this.root.laboratory.labModel.labsForSelect.filter(
             (item) => item.id === this.chemicalModel.updateChemicalLab
           )?.[0],
+          cost: this.chemicalModel.updateChemicalCost,
+          mfgDate: new Date(this.chemicalModel.updateChemicalMfgDate),
+          expDate: this.chemicalModel.updateChemicalShowExpDate
+            ? new Date(this.chemicalModel.updateChemicalExpDate)
+            : undefined,
         });
         this.chemicalModel.updateChemicalLoading = false;
         this.chemicalModel.showAddChemicalModal = false;

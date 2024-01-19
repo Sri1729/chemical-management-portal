@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { DateComp, NumberComp, SaveButton } from "..";
+import {
+  DateComp,
+  ManufacturingAndExpiryInput,
+  NumberComp,
+  SaveButton,
+} from "..";
 import { useStore } from "@/store";
 import { observer } from "mobx-react-lite";
 import { UpdateActions } from "@/types";
@@ -19,6 +24,10 @@ const AddQuantityModalComp = ({ isFromStorePage }: Props) => {
   const quantity = chemicalModel?.updateChemicalQuantity;
   const selectedDate = chemicalModel?.updateChemicalDate;
   const selectedTime = chemicalModel?.updateChemicalTime;
+  const selectedMfgDate = chemicalModel?.updateChemicalMfgDate;
+  const selectedExpDate = chemicalModel?.updateChemicalExpDate;
+  const selectedShowExpDate = chemicalModel?.updateChemicalShowExpDate;
+  const selectedCost = chemicalModel?.updateChemicalCost;
 
   return (
     showModal && (
@@ -26,7 +35,7 @@ const AddQuantityModalComp = ({ isFromStorePage }: Props) => {
         <div className="fixed inset-0 bg-black opacity-50"></div>
 
         <div className="bg-white p-6 rounded-lg max-w-md w-full relative">
-          <h2 className="text-xl font-bold mb-4">{`Add Quantity for ${chemical?.name} (${chemical?.formula})`}</h2>
+          <h2 className="text-xl font-bold mb-4">{`Add Quantity for ${chemical?.name}`}</h2>
 
           <NumberComp
             title="Quantity to Add"
@@ -36,12 +45,40 @@ const AddQuantityModalComp = ({ isFromStorePage }: Props) => {
               (chemicalModel.updateChemicalQuantity = val)
             }
             value={quantity}
+            showDisabledQuantity={true}
+            quantatiyFieldId="units"
+            quantatiyTitle="Unit(s)"
+            quantatiyValue={chemicalModel?.selectedChemical?.units || ""}
+            quantatiyError=""
+            onQuantatiyChangeValue={(val) => null}
           />
           <DateComp
             selectedDate={selectedDate}
             selectedTime={selectedTime}
             setSelectedDate={(val) => (chemicalModel.updateChemicalDate = val)}
             setSelectedTime={(val) => (chemicalModel.updateChemicalTime = val)}
+            chemicalCost={selectedCost}
+            setChemicalCost={(val) => (chemicalModel.updateChemicalCost = val)}
+            chemicalCostError={chemicalModel?.updateChemicalError?.cost}
+          />
+
+          <ManufacturingAndExpiryInput
+            manufacturingDate={selectedMfgDate}
+            expiryDate={selectedExpDate}
+            showExpiry={selectedShowExpDate}
+            onManufacturingDateChange={(val) =>
+              (chemicalModel.updateChemicalMfgDate = val)
+            }
+            onExpiryDateChange={(val) =>
+              (chemicalModel.updateChemicalExpDate = val)
+            }
+            onShowExpiryChange={(val) =>
+              (chemicalModel.updateChemicalShowExpDate = val)
+            }
+            manufacturingDateError={
+              chemicalModel?.updateChemicalError?.manufactureDate
+            }
+            expiryDateError={chemicalModel?.updateChemicalError?.expiryDate}
           />
 
           <div className="flex justify-center">

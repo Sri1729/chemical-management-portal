@@ -13,6 +13,9 @@ export interface newChemicalError {
 export interface updateChemicalError {
   quantity: string;
   lab: string;
+  cost: string;
+  manufactureDate: string;
+  expiryDate: string;
 }
 
 export const qunatity_units = ["kg", "g", "lt", "ml"];
@@ -45,6 +48,9 @@ export class ChemicalModel {
   private _updateChemicalError: updateChemicalError = {
     lab: "",
     quantity: "",
+    cost: "",
+    expiryDate: "",
+    manufactureDate: "",
   };
   private _updateChemicalLoading: boolean = false;
   private _selectedChemical: Chemical | null = null;
@@ -52,6 +58,10 @@ export class ChemicalModel {
   private _updateChemicalQuantity: string = "";
   private _updateChemicalDate: string = new Date().toISOString().split("T")[0];
   private _updateChemicalTime: string = "09:00";
+  private _updateChemicalCost: string = "";
+  private _updateChemicalMfgDate: string = "";
+  private _updateChemicalExpDate: string = "";
+  private _updateChemicalShowExpDate: boolean = false;
   private _updateChemicalLab: string = "";
   private _showRemoveChemicalModal: boolean = false;
   private _showAddChemicalModal: boolean = false;
@@ -78,6 +88,7 @@ export class ChemicalModel {
     });
   }
   public set chemicals(_val) {
+    console.log("all chemicals", _val);
     runInAction(() => {
       this._chemicals = _val;
     });
@@ -222,6 +233,58 @@ export class ChemicalModel {
     return this._updateChemicalTime;
   }
 
+  public set updateChemicalCost(_val: string) {
+    runInAction(() => {
+      this._updateChemicalCost = _val;
+      this._updateChemicalError = {
+        ...this._updateChemicalError,
+        cost: "",
+      };
+    });
+  }
+  public get updateChemicalCost(): string {
+    return this._updateChemicalCost;
+  }
+
+  public set updateChemicalMfgDate(val: string) {
+    runInAction(() => {
+      this._updateChemicalMfgDate = val;
+      this._updateChemicalError = {
+        ...this._updateChemicalError,
+        manufactureDate: "",
+      };
+    });
+  }
+  public get updateChemicalMfgDate() {
+    return this._updateChemicalMfgDate;
+  }
+
+  public set updateChemicalExpDate(val: string) {
+    runInAction(() => {
+      this._updateChemicalExpDate = val;
+      this._updateChemicalError = {
+        ...this._updateChemicalError,
+        expiryDate: "",
+      };
+    });
+  }
+  public get updateChemicalExpDate() {
+    return this._updateChemicalExpDate;
+  }
+
+  public set updateChemicalShowExpDate(val: boolean) {
+    runInAction(() => {
+      this._updateChemicalShowExpDate = val;
+      this._updateChemicalError = {
+        ...this._updateChemicalError,
+        expiryDate: "",
+      };
+    });
+  }
+  public get updateChemicalShowExpDate() {
+    return this._updateChemicalShowExpDate;
+  }
+
   public set updateChemicalQuantity(_val: string) {
     runInAction(() => {
       this._updateChemicalQuantity = _val;
@@ -334,11 +397,18 @@ export class ChemicalModel {
       this._newChemicalDate = new Date().toISOString().split("T")[0];
       this._newChemicalTime = "09:00";
       this._newChemicalCost = "";
+      this._newChemicalExpDate = "";
+      this._newChemicalMfgDate = "";
+      this._newChemicalShowExpDate = false;
 
       this._updateChemicalDate = new Date().toISOString().split("T")[0];
       this._updateChemicalTime = "09:00";
       this._updateChemicalQuantity = "";
       this._updateChemicalLab = "";
+      this._updateChemicalCost = "";
+      this._updateChemicalExpDate = "";
+      this._updateChemicalMfgDate = "";
+      this._updateChemicalShowExpDate = false;
     });
   }
 }
