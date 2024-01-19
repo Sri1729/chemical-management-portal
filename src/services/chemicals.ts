@@ -23,20 +23,45 @@ import {
 
 export const addStoreChemical = async ({
   name,
-  formula,
   quantity,
   timestamp,
   action,
+  units,
+  expDate,
+  mfgDate,
+  cost,
 }: AddStoreChemicalRequest) => {
-  await addDoc(collection(db, "storeChemicals"), {
+  console.log("chemicals adding", {
+    name,
+    quantity,
+    timestamp,
+    action,
+    units,
+    expDate,
+    mfgDate,
+    cost,
+  });
+  // Get the collection reference for chemicals
+  const chemicalsCollection = collection(db, "storeChemicals");
+
+  // Add a new document with an auto-generated ID
+  await addDoc(chemicalsCollection, {
     name: name,
-    formula: formula,
-    quantity: quantity,
-    logs: [
+    batches: [
       {
-        timestamp: timestamp,
-        action: action,
+        batchNumber: 1,
         quantity: quantity,
+        units: units,
+        ...(expDate !== undefined && { expiryDate: expDate }),
+        manufacturingDate: mfgDate,
+        cost: cost,
+        logs: [
+          {
+            timestamp: timestamp,
+            action: action,
+            quantity: quantity,
+          },
+        ],
       },
     ],
   });

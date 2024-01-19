@@ -14,33 +14,65 @@ export class Chemicals {
   }
 
   public onAddNewChemical = async () => {
-    let error: newChemicalError = { name: "", formula: "", quantity: "" };
+    let error: newChemicalError = {
+      name: "",
+      quantity: "",
+      units: "",
+      cost: "",
+      expiryDate: "",
+      manufactureDate: "",
+    };
     if (this.chemicalModel?.newChemicalName?.length === 0) {
       error.name = "This is a mandatory field";
     }
-    if (this.chemicalModel?.newChemicalFormula?.length === 0) {
-      error.formula = "This is a mandatory field";
+    if (this.chemicalModel?.newChemicalCost?.length === 0) {
+      error.cost = "This is a mandatory field";
     }
     if (!this.chemicalModel?.newChemicalQuantity) {
       error.quantity = "This is a mandatory field";
     }
-    if (!error.name && !error.formula && !error.quantity) {
+    if (!this.chemicalModel?.newChemicalQunatityUnit) {
+      error.units = "This is a mandatory field";
+    }
+    if (!this.chemicalModel.newChemicalMfgDate) {
+      error.manufactureDate = "This is a mandatory field";
+    }
+    if (
+      this.chemicalModel.newChemicalShowExpDate &&
+      !this.chemicalModel.newChemicalExpDate
+    ) {
+      error.expiryDate = "This is a mandatory field";
+    }
+    if (
+      !error.name &&
+      !error.cost &&
+      !error.quantity &&
+      !error.units &&
+      !error.expiryDate &&
+      !error.manufactureDate
+    ) {
       try {
         this.chemicalModel.newChemicalAddLoading = true;
         await addStoreChemical({
           name: this.chemicalModel?.newChemicalName,
-          formula: this.chemicalModel?.newChemicalFormula,
           timestamp: new Date(
             `${this.chemicalModel?.newChemicalDate}T${this.chemicalModel?.newChemicalTime}`
           ),
           quantity: this.chemicalModel?.newChemicalQuantity,
           action: UpdateActions.ADD,
+          cost: this.chemicalModel.newChemicalCost,
+          expDate: this.chemicalModel.newChemicalShowExpDate
+            ? new Date(this.chemicalModel.newChemicalExpDate)
+            : undefined,
+          mfgDate: new Date(this.chemicalModel.newChemicalMfgDate),
+          units: this.chemicalModel.newChemicalQunatityUnit,
         });
         this.chemicalModel.newChemicalModalOpen = false;
         this.chemicalModel.newChemicalAddLoading = false;
         this.chemicalModel.resetValues();
       } catch (e) {
-        this.chemicalModel.newChemicalAddLoading = true;
+        this.chemicalModel.newChemicalAddLoading = false;
+        console.log("error", e);
       }
     } else {
       runInAction(() => {

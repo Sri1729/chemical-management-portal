@@ -3,14 +3,19 @@ import { makeAutoObservable, runInAction } from "mobx";
 
 export interface newChemicalError {
   name: string;
-  formula: string;
   quantity: string;
+  units: string;
+  cost: string;
+  manufactureDate: string;
+  expiryDate: string;
 }
 
 export interface updateChemicalError {
   quantity: string;
   lab: string;
 }
+
+export const qunatity_units = ["kg", "g", "lt", "ml"];
 
 export class ChemicalModel {
   constructor() {
@@ -19,16 +24,23 @@ export class ChemicalModel {
 
   private _chemicals: Chemical[] = [];
   private _newChemicalName: string = "";
-  private _newChemicalFormula: string = "";
+  private _newChemicalCost: string = "";
   private _newChemicalDate: string = new Date().toISOString().split("T")[0];
+  private _newChemicalMfgDate: string = "";
+  private _newChemicalExpDate: string = "";
+  private _newChemicalShowExpDate: boolean = false;
   private _newChemicalTime: string = "09:00";
   private _newChemicalQuantity: string = "";
+  private _newChemicalQunatityUnit: string = "";
   private _newChemicalModalOpen: boolean = false;
   private _newChemicalAddLoading: boolean = false;
   private _newChemicalError: newChemicalError = {
     name: "",
-    formula: "",
     quantity: "",
+    units: "",
+    cost: "",
+    expiryDate: "",
+    manufactureDate: "",
   };
   private _updateChemicalError: updateChemicalError = {
     lab: "",
@@ -82,14 +94,14 @@ export class ChemicalModel {
     return this._newChemicalName;
   }
 
-  public set newChemicalFormula(val: string) {
+  public set newChemicalCost(val: string) {
     runInAction(() => {
-      this._newChemicalFormula = val;
-      this._newChemicalError = { ...this._newChemicalError, formula: "" };
+      this._newChemicalCost = val;
+      this._newChemicalError = { ...this._newChemicalError, cost: "" };
     });
   }
-  public get newChemicalFormula() {
-    return this._newChemicalFormula;
+  public get newChemicalCost() {
+    return this._newChemicalCost;
   }
 
   public set newChemicalDate(val: string) {
@@ -99,6 +111,39 @@ export class ChemicalModel {
   }
   public get newChemicalDate() {
     return this._newChemicalDate;
+  }
+
+  public set newChemicalMfgDate(val: string) {
+    runInAction(() => {
+      this._newChemicalMfgDate = val;
+      this._newChemicalError = {
+        ...this._newChemicalError,
+        manufactureDate: "",
+      };
+    });
+  }
+  public get newChemicalMfgDate() {
+    return this._newChemicalMfgDate;
+  }
+
+  public set newChemicalExpDate(val: string) {
+    runInAction(() => {
+      this._newChemicalExpDate = val;
+      this._newChemicalError = { ...this._newChemicalError, expiryDate: "" };
+    });
+  }
+  public get newChemicalExpDate() {
+    return this._newChemicalExpDate;
+  }
+
+  public set newChemicalShowExpDate(val: boolean) {
+    runInAction(() => {
+      this._newChemicalShowExpDate = val;
+      this._newChemicalError = { ...this._newChemicalError, expiryDate: "" };
+    });
+  }
+  public get newChemicalShowExpDate() {
+    return this._newChemicalShowExpDate;
   }
 
   public set newChemicalTime(val: string) {
@@ -119,6 +164,17 @@ export class ChemicalModel {
 
   public get newChemicalQuantity() {
     return this._newChemicalQuantity;
+  }
+
+  public set newChemicalQunatityUnit(val: string) {
+    runInAction(() => {
+      this._newChemicalQunatityUnit = val;
+      this._newChemicalError = { ...this._newChemicalError, units: "" };
+    });
+  }
+
+  public get newChemicalQunatityUnit() {
+    return this._newChemicalQunatityUnit;
   }
 
   public set newChemicalModalOpen(val: boolean) {
@@ -274,9 +330,10 @@ export class ChemicalModel {
     runInAction(() => {
       this._newChemicalName = "";
       this._newChemicalQuantity = "";
+      this._newChemicalQunatityUnit = "";
       this._newChemicalDate = new Date().toISOString().split("T")[0];
       this._newChemicalTime = "09:00";
-      this._newChemicalFormula = "";
+      this._newChemicalCost = "";
 
       this._updateChemicalDate = new Date().toISOString().split("T")[0];
       this._updateChemicalTime = "09:00";

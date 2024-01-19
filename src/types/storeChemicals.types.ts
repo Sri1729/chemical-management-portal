@@ -7,10 +7,13 @@ export enum UpdateActions {
 }
 export interface AddStoreChemicalRequest {
   name: string;
-  formula: string;
   quantity: string;
+  units: string;
   timestamp: Date;
   action: UpdateActions;
+  mfgDate: Date;
+  expDate?: Date;
+  cost: string;
 }
 
 export interface ChemicalResponseLog {

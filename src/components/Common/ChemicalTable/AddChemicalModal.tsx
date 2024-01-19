@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { DateComp, InputComp, NumberComp, SaveButton } from "..";
+import {
+  DateComp,
+  InputComp,
+  NumberComp,
+  SaveButton,
+  ManufacturingAndExpiryInput,
+} from "..";
 import { useStore } from "@/store";
 import { observer } from "mobx-react-lite";
 
@@ -11,11 +17,15 @@ const AddChemicalModalComp = ({ isFromStorePage }: Props) => {
   const chemicalStore = store?.chemicals;
   const chemicalModel = chemicalStore?.chemicalModel;
   const name = chemicalModel?.newChemicalName;
-  const formula = chemicalModel?.newChemicalFormula;
   const initialQuantity = chemicalModel?.newChemicalQuantity;
+  const quantityUnits = chemicalModel?.newChemicalQunatityUnit;
   const selectedDate = chemicalModel?.newChemicalDate;
   const selectedTime = chemicalModel?.newChemicalTime;
   const errors = chemicalModel?.newChemicalError;
+  const cost = chemicalModel?.newChemicalCost;
+  const mfgDate = chemicalModel?.newChemicalMfgDate;
+  const expDate = chemicalModel?.newChemicalExpDate;
+  const showExpDate = chemicalModel?.newChemicalShowExpDate;
 
   const showModal = chemicalModel?.newChemicalModalOpen;
   const onClose = () => (chemicalModel.newChemicalModalOpen = false);
@@ -35,12 +45,27 @@ const AddChemicalModalComp = ({ isFromStorePage }: Props) => {
             fieldId="name"
           />
 
-          <InputComp
+          {/* <InputComp
             title="Formula"
             error={errors?.formula}
             value={formula}
             onChangeValue={(val) => (chemicalModel.newChemicalFormula = val)}
             fieldId="formula"
+          /> */}
+
+          <NumberComp
+            error={errors?.quantity}
+            title="Initial Quantity"
+            fieldId="quantity"
+            onChangeValue={(val) => (chemicalModel.newChemicalQuantity = val)}
+            value={initialQuantity}
+            quantatiyError={errors?.units}
+            quantatiyTitle="Unit(s)"
+            quantatiyFieldId="Units"
+            onQuantatiyChangeValue={(val) =>
+              (chemicalModel.newChemicalQunatityUnit = val)
+            }
+            quantatiyValue={quantityUnits}
           />
 
           <DateComp
@@ -48,13 +73,26 @@ const AddChemicalModalComp = ({ isFromStorePage }: Props) => {
             selectedTime={selectedTime}
             setSelectedDate={(val) => (chemicalModel.newChemicalDate = val)}
             setSelectedTime={(val) => (chemicalModel.newChemicalTime = val)}
+            chemicalCost={cost}
+            setChemicalCost={(val) => (chemicalModel.newChemicalCost = val)}
+            chemicalCostError={errors.cost}
           />
-          <NumberComp
-            error={errors?.quantity}
-            title="Initial Quantity"
-            fieldId="quantity"
-            onChangeValue={(val) => (chemicalModel.newChemicalQuantity = val)}
-            value={initialQuantity}
+
+          <ManufacturingAndExpiryInput
+            expiryDate={expDate}
+            manufacturingDate={mfgDate}
+            onExpiryDateChange={(val) =>
+              (chemicalModel.newChemicalExpDate = val)
+            }
+            onManufacturingDateChange={(val) =>
+              (chemicalModel.newChemicalMfgDate = val)
+            }
+            onShowExpiryChange={(val) =>
+              (chemicalModel.newChemicalShowExpDate = val)
+            }
+            showExpiry={showExpDate}
+            manufacturingDateError={errors?.manufactureDate}
+            expiryDateError={errors?.expiryDate}
           />
 
           <div className="flex justify-center">
