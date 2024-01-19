@@ -163,19 +163,39 @@ export const updateIndividualLabChemical = async ({
   id,
   quantity,
   timestamp,
+  batchId,
 }: updateIndividualLabChemicalRequest) => {
   const labRef = doc(db, "labChemicals", lab || "", "chemicals", id);
   const docSnap = await getDoc(labRef);
   const uuidKey = uuidv4();
   if (docSnap?.exists()) {
-    await updateDoc(labRef, {
-      quantity: `${Number(docSnap?.data()?.quantity) - Number(quantity)}`, // replace with your increment value
-      logs: arrayUnion({
-        id: uuidKey,
-        timestamp: timestamp,
-        action: UpdateActions.DELETE,
-        quantity: quantity,
-      }),
-    });
+    const existingData = docSnap.data();
+    if (existingData?.batches) {
+      const existingBatchIndex = existingData.batches.findIndex(
+        (batch: any) => batch.batchNo === `${parseInt(batchId || "0") + 1}`
+      );
+
+      if (existingBatchIndex !== -1) {
+        const updatedBatches = [...existingData.batches];
+        const selectedBatch = { ...updatedBatches[existingBatchIndex] };
+        selectedBatch.logs = [
+          ...selectedBatch.logs,
+          {
+            id: uuidKey,
+            timestamp: timestamp,
+            action: UpdateActions.DELETE,
+            quantity: quantity,
+          },
+        ];
+
+        selectedBatch.quantity = `${
+          parseInt(selectedBatch.quantity) - parseInt(quantity)
+        }`;
+
+        updatedBatches[existingBatchIndex] = selectedBatch;
+
+        await updateDoc(labRef, { batches: updatedBatches });
+      }
+    }
   }
 };

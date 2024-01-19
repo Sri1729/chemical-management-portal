@@ -41,4 +41,5 @@ export interface updateIndividualLabChemicalRequest {
   id: string;
   quantity: string;
   timestamp: Date;
+  batchId: string;
 }

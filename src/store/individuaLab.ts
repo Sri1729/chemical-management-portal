@@ -34,12 +34,22 @@ export class IndividualLab {
   }
 
   public async onUpdateChemical(action: UpdateActions) {
-    let error: updateChemicalError = { lab: "", quantity: "" };
+    let error: updateChemicalError = {
+      lab: "",
+      quantity: "",
+      batch: "",
+      cost: "",
+      expiryDate: "",
+      manufactureDate: "",
+    };
     if (!this.chemicalModel.updateChemicalQuantity) {
       error.quantity = "This is a mandatory field";
     }
+    if (!this.chemicalModel.updateChemicalBatch) {
+      error.batch = "This is a mandatory field";
+    }
 
-    if (!error.quantity) {
+    if (!error.quantity && !error.batch) {
       try {
         this.chemicalModel.updateChemicalLoading = true;
         const quantity = this.chemicalModel.updateChemicalQuantity;
@@ -47,9 +57,8 @@ export class IndividualLab {
           id: this.chemicalModel.selectedChemical?.id || "",
           lab: this._currentLabDetails?.id || "",
           quantity: quantity,
-          timestamp: new Date(
-            `${this.chemicalModel.updateChemicalDate}T${this.chemicalModel.updateChemicalTime}`
-          ),
+          timestamp: new Date(`${this.chemicalModel.updateChemicalDate}`),
+          batchId: this.chemicalModel.updateChemicalBatch,
         });
         this.chemicalModel.updateChemicalLoading = false;
         this.chemicalModel.showAddChemicalModal = false;
