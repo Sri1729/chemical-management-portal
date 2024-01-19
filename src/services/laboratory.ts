@@ -113,7 +113,7 @@ export const getRealTimeIndividualLabUpdates = (
   return unsubscribe;
 };
 
-export const getOverallCost = (batches: any[]) => {
+const getOverallCost = (batches: any[]) => {
   let sum = 0;
   batches?.forEach((batch) => {
     sum += parseFloat(batch?.cost);
@@ -121,7 +121,7 @@ export const getOverallCost = (batches: any[]) => {
   return `${sum}`;
 };
 
-export const getOverallQuantity = (batches: any[]) => {
+const getOverallQuantity = (batches: any[]) => {
   let sum = 0;
   batches?.forEach((batch) => {
     sum += parseInt(batch?.quantity);
@@ -129,7 +129,7 @@ export const getOverallQuantity = (batches: any[]) => {
   return `${sum}`;
 };
 
-export const processBatches = (batches: any[]): Batch[] => {
+const processBatches = (batches: any[]): Batch[] => {
   return batches?.map((batch) => {
     return {
       quantity: batch.quantity,
