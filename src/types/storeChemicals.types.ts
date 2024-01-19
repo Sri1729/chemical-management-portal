@@ -59,6 +59,7 @@ export interface UpdateStoreChemicalRequest {
   expDate?: Date;
   cost: string;
   batchId?: string;
+  units: string;
 }
 
 export enum Sort {

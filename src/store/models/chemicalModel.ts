@@ -111,7 +111,6 @@ export class ChemicalModel {
     });
   }
   public set chemicals(_val) {
-    console.log("all chemicals", _val);
     runInAction(() => {
       this._chemicals = _val;
     });

@@ -55,9 +55,7 @@ export class Chemicals {
         this.chemicalModel.newChemicalAddLoading = true;
         await addStoreChemical({
           name: this.chemicalModel?.newChemicalName,
-          timestamp: new Date(
-            `${this.chemicalModel?.newChemicalDate}T${this.chemicalModel?.newChemicalTime}`
-          ),
+          timestamp: new Date(`${this.chemicalModel?.newChemicalDate}`),
           quantity: this.chemicalModel?.newChemicalQuantity,
           action: UpdateActions.ADD,
           cost: this.chemicalModel.newChemicalCost,
@@ -140,9 +138,7 @@ export class Chemicals {
           id: this.chemicalModel.selectedChemical?.id || "",
           quantity: this.chemicalModel.updateChemicalQuantity,
           remainingQuantity: remQuantity,
-          timestamp: new Date(
-            `${this.chemicalModel.updateChemicalDate}T${this.chemicalModel.updateChemicalTime}`
-          ),
+          timestamp: new Date(`${this.chemicalModel.updateChemicalDate}`),
           lab: this.root.laboratory.labModel.labsForSelect.filter(
             (item) => item.id === this.chemicalModel.updateChemicalLab
           )?.[0],
@@ -152,6 +148,7 @@ export class Chemicals {
             ? new Date(this.chemicalModel.updateChemicalExpDate)
             : undefined,
           batchId: this.chemicalModel.updateChemicalBatch,
+          units: this.chemicalModel.selectedChemical?.units || "",
         });
         this.chemicalModel.updateChemicalLoading = false;
         this.chemicalModel.showAddChemicalModal = false;
@@ -160,6 +157,7 @@ export class Chemicals {
         this.chemicalModel.resetValues();
       } catch (e) {
         this.chemicalModel.updateChemicalLoading = false;
+        console.log("error", e);
       }
     } else {
       runInAction(() => {
