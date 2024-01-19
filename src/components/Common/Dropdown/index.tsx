@@ -7,7 +7,7 @@ interface DropdownProps {
   error: string;
   fieldId: string;
   onChangeValue: (val: string) => void;
-  labs: SelectLab[];
+  values: SelectLab[];
 }
 export const Dropdown = ({
   title,
@@ -15,7 +15,7 @@ export const Dropdown = ({
   error,
   fieldId,
   onChangeValue,
-  labs,
+  values,
 }: DropdownProps) => {
   return (
     <div className="mb-4">
@@ -33,8 +33,8 @@ export const Dropdown = ({
           error ? "border-red-500" : "border-gray-300"
         } rounded py-2 px-3 focus:border-blue-500 outline-none`}
       >
-        <option value="">Select a lab</option>
-        {labs.map((item) => (
+        <option value="">{title}</option>
+        {values.map((item) => (
           <option key={item.id} value={item.id}>
             {item.name}
           </option>

@@ -88,34 +88,40 @@ export class Chemicals {
       cost: "",
       expiryDate: "",
       manufactureDate: "",
+      batch: "",
     };
     if (!this.chemicalModel.updateChemicalQuantity) {
       error.quantity = "This is a mandatory field";
     }
-    if (
-      !this.chemicalModel.updateChemicalLab &&
-      action === UpdateActions.DELETE
-    ) {
-      error.lab = "This is a mandatory field";
+    if (action === UpdateActions.DELETE) {
+      if (!this.chemicalModel.updateChemicalLab) {
+        error.lab = "This is a mandatory field";
+      }
+      if (!this.chemicalModel.updateChemicalBatch) {
+        error.batch = "This is a mandatory field";
+      }
     }
-    if (!this.chemicalModel.updateChemicalCost) {
-      error.cost = "This is a mandatory field";
-    }
-    if (!this.chemicalModel.updateChemicalMfgDate) {
-      error.manufactureDate = "This is a mandatory field";
-    }
-    if (
-      this.chemicalModel.updateChemicalShowExpDate &&
-      !this.chemicalModel.updateChemicalExpDate
-    ) {
-      error.expiryDate = "This is a mandatory field";
+    if (action === UpdateActions.ADD) {
+      if (!this.chemicalModel.updateChemicalCost) {
+        error.cost = "This is a mandatory field";
+      }
+      if (!this.chemicalModel.updateChemicalMfgDate) {
+        error.manufactureDate = "This is a mandatory field";
+      }
+      if (
+        this.chemicalModel.updateChemicalShowExpDate &&
+        !this.chemicalModel.updateChemicalExpDate
+      ) {
+        error.expiryDate = "This is a mandatory field";
+      }
     }
     if (
       !error.quantity &&
       !error.cost &&
       !error.expiryDate &&
       !error.manufactureDate &&
-      (action === UpdateActions.DELETE ? !error.lab : true)
+      (action === UpdateActions.DELETE ? !error.lab : true) &&
+      (action === UpdateActions.DELETE ? !error.batch : true)
     ) {
       try {
         this.chemicalModel.updateChemicalLoading = true;
@@ -145,6 +151,7 @@ export class Chemicals {
           expDate: this.chemicalModel.updateChemicalShowExpDate
             ? new Date(this.chemicalModel.updateChemicalExpDate)
             : undefined,
+          batchId: this.chemicalModel.updateChemicalBatch,
         });
         this.chemicalModel.updateChemicalLoading = false;
         this.chemicalModel.showAddChemicalModal = false;

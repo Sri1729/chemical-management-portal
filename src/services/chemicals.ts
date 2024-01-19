@@ -117,9 +117,11 @@ export const processBatches = (batches: any[]): Batch[] => {
       manufacturingDate: new Date(
         batch?.manufacturingDate?.seconds * 1000
       ).toLocaleDateString("en-GB"),
-      expiryDate: new Date(
-        batch?.expiryDate?.seconds * 1000
-      ).toLocaleDateString("en-GB"),
+      expiryDate: batch?.expiryDate
+        ? new Date(batch?.expiryDate?.seconds * 1000).toLocaleDateString(
+            "en-GB"
+          )
+        : undefined,
       logs: processLogs(batch.logs),
     };
   });
@@ -156,6 +158,7 @@ export const updateStoreChemicals = async ({
   cost,
   mfgDate,
   expDate,
+  batchId,
 }: UpdateStoreChemicalRequest) => {
   const docRef = await doc(db, "storeChemicals", id);
   const uuidKey = uuidv4();
@@ -175,29 +178,35 @@ export const updateStoreChemicals = async ({
           lab: lab?.name,
         };
 
-  const batch = {
-    quantity: quantity,
-    manufacturingDate: mfgDate,
-    cost: cost,
-    ...(expDate !== undefined && { expiryDate: expDate }),
-    logs: [
+  if (action === UpdateActions.ADD) {
+    const batch = {
+      quantity: quantity,
+      manufacturingDate: mfgDate,
+      cost: cost,
+      ...(expDate !== undefined && { expiryDate: expDate }),
+      logs: [log],
+    };
+    await setDoc(
+      docRef,
       {
-        id: uuidKey,
-        timestamp: timestamp,
-        action: action,
-        quantity: quantity,
-        ...(lab?.name && { lab: lab?.name }),
+        batches: arrayUnion(batch),
       },
-    ],
-  };
-  console.log("batch", batch);
-  await setDoc(
-    docRef,
-    {
-      batches: arrayUnion(batch),
-    },
-    { merge: true }
-  );
+      { merge: true }
+    );
+  }
+  if (action === UpdateActions.DELETE) {
+    const data = (await getDoc(docRef)).data();
+    const updatedBatches = [...data?.batches];
+    if (batchId) {
+      const selectedBatch = updatedBatches?.[parseInt(batchId)];
+      selectedBatch.logs = [...selectedBatch.logs, log];
+      selectedBatch.quantity = `${
+        parseInt(selectedBatch.quantity) - parseInt(quantity)
+      }`;
+      updatedBatches[parseInt(batchId)] = selectedBatch;
+      await setDoc(docRef, { batches: updatedBatches }, { merge: true });
+    }
+  }
 
   // add this to the labChemicals
   if (action === UpdateActions.DELETE) {

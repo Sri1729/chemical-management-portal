@@ -53,7 +53,7 @@ const AddUserComponentComp = () => {
               onChangeValue={(val) => (userStore.addUserAccessLab = val)}
               title="Access to Lab"
               value={userStore.addUserAccessLab}
-              labs={labs}
+              values={labs}
             />
           )}
 

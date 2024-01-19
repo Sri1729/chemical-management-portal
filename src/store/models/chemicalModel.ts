@@ -16,6 +16,7 @@ export interface updateChemicalError {
   cost: string;
   manufactureDate: string;
   expiryDate: string;
+  batch: string;
 }
 
 export const qunatity_units = ["kg", "g", "lt", "ml"];
@@ -51,6 +52,7 @@ export class ChemicalModel {
     cost: "",
     expiryDate: "",
     manufactureDate: "",
+    batch: "",
   };
   private _updateChemicalLoading: boolean = false;
   private _selectedChemical: Chemical | null = null;
@@ -63,6 +65,7 @@ export class ChemicalModel {
   private _updateChemicalExpDate: string = "";
   private _updateChemicalShowExpDate: boolean = false;
   private _updateChemicalLab: string = "";
+  private _updateChemicalBatch: string = "";
   private _showRemoveChemicalModal: boolean = false;
   private _showAddChemicalModal: boolean = false;
   private _showViewChemicalLogModal: boolean = false;
@@ -70,13 +73,24 @@ export class ChemicalModel {
   private _searchText: string = "";
   private _sortBy: Sort = Sort.INCREASE;
 
+  public get batches(): { id: string; name: string }[] {
+    let arr: { id: string; name: string }[] = [];
+    this.selectedChemical?.batches?.forEach((batch, index) => {
+      arr.push({
+        id: `${index}`,
+        name: `Batch ${index + 1}    ${batch.manufacturingDate} - ${
+          batch.expiryDate ?? "*"
+        }`,
+      });
+    });
+    return arr;
+  }
+
   public get chemicals(): Chemical[] {
     let chemicalsArray: Chemical[];
     if (this.searchText) {
-      chemicalsArray = this._chemicals.filter(
-        (item: Chemical) =>
-          item.name.toLowerCase().includes(this.searchText.toLowerCase()) ||
-          item.formula.toLowerCase().includes(this.searchText.toLowerCase())
+      chemicalsArray = this._chemicals.filter((item: Chemical) =>
+        item.name.toLowerCase().includes(this.searchText.toLowerCase())
       );
     } else {
       chemicalsArray = this._chemicals;
@@ -311,6 +325,19 @@ export class ChemicalModel {
     return this._updateChemicalLab;
   }
 
+  public set updateChemicalBatch(_val: string) {
+    runInAction(() => {
+      this._updateChemicalBatch = _val;
+      this._updateChemicalError = {
+        ...this._updateChemicalError,
+        batch: "",
+      };
+    });
+  }
+  public get updateChemicalBatch(): string {
+    return this._updateChemicalBatch;
+  }
+
   public set showRemoveChemicalModal(_val: boolean) {
     runInAction(() => {
       this._showRemoveChemicalModal = _val;
@@ -405,6 +432,7 @@ export class ChemicalModel {
       this._updateChemicalTime = "09:00";
       this._updateChemicalQuantity = "";
       this._updateChemicalLab = "";
+      this._updateChemicalBatch = "";
       this._updateChemicalCost = "";
       this._updateChemicalExpDate = "";
       this._updateChemicalMfgDate = "";
