@@ -101,7 +101,7 @@ export const getRealTimeIndividualLabUpdates = (
           units: values?.units,
           quantity: getOverallQuantity(values?.batches),
           batches: processBatches(values?.batches),
-          overallCost: "0",
+          overallCost: parseFloat(getOverallCost(values?.batches)).toFixed(2),
         };
       });
       setData(newData);
@@ -111,6 +111,14 @@ export const getRealTimeIndividualLabUpdates = (
     }
   );
   return unsubscribe;
+};
+
+export const getOverallCost = (batches: any[]) => {
+  let sum = 0;
+  batches?.forEach((batch) => {
+    sum += parseFloat(batch?.cost);
+  });
+  return `${sum}`;
 };
 
 export const getOverallQuantity = (batches: any[]) => {
@@ -136,6 +144,7 @@ export const processBatches = (batches: any[]): Batch[] => {
           )
         : undefined,
       logs: processLogs(batch.logs),
+      initialQuantity: batch?.initialQuantity,
     };
   });
 };

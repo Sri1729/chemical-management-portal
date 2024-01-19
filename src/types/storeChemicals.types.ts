@@ -32,6 +32,7 @@ export interface Chemical {
   batches: Batch[];
 }
 export interface Batch {
+  initialQuantity: string;
   quantity: string;
   cost: string;
   manufacturingDate: string;

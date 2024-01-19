@@ -42,6 +42,7 @@ export const addStoreChemical = async ({
     batches: [
       {
         batchNo: 1,
+        initialQuantity: quantity,
         quantity: quantity,
         ...(expDate !== undefined && { expiryDate: expDate }),
         manufacturingDate: mfgDate,
@@ -103,6 +104,7 @@ export const processBatches = (batches: any[]): Batch[] => {
   return batches?.map((batch) => {
     return {
       quantity: batch.quantity,
+      initialQuantity: batch.initialQuantity,
       units: batch.units,
       cost: batch.cost,
       manufacturingDate: new Date(
@@ -175,6 +177,7 @@ export const updateStoreChemicals = async ({
   if (action === UpdateActions.ADD) {
     const batch = {
       batchNo: data?.batches?.length + 1,
+      initialQuantity: quantity,
       quantity: quantity,
       manufacturingDate: mfgDate,
       cost: cost,
@@ -208,6 +211,8 @@ export const updateStoreChemicals = async ({
     const labRef = doc(db, "labChemicals", lab?.id || "", "chemicals", id);
     const docSnap = await getDoc(labRef);
     const actualBatch = data?.batches?.[parseInt(batchId || "0")];
+    const actualBatchCost = actualBatch?.cost;
+    const actualBatchInitialQuantity = actualBatch?.initialQuantity;
 
     // check if we have the chemical
     if (docSnap.exists() && docSnap.data()) {
@@ -240,6 +245,13 @@ export const updateStoreChemicals = async ({
             parseInt(selectedBatch.quantity) + parseInt(quantity)
           }`;
 
+          // update cost
+          selectedBatch.cost = `${
+            parseFloat(selectedBatch.cost) +
+            (parseFloat(actualBatchCost) * parseFloat(quantity)) /
+              parseFloat(actualBatchInitialQuantity)
+          }`;
+
           updatedBatches[existingBatchIndex] = selectedBatch;
 
           // update doc
@@ -252,7 +264,10 @@ export const updateStoreChemicals = async ({
             batchNo: `${parseInt(batchId || "0") + 1}`,
             quantity: quantity,
             manufacturingDate: actualBatch?.manufacturingDate,
-            cost: data?.batches?.[parseInt(batchId || "0")]?.cost,
+            cost: `${
+              (parseFloat(actualBatchCost) * parseFloat(quantity)) /
+              parseFloat(actualBatchInitialQuantity)
+            }`,
             ...(actualBatch?.expiryDate !== undefined && {
               expiryDate: actualBatch?.expiryDate,
             }),
@@ -278,7 +293,10 @@ export const updateStoreChemicals = async ({
         batchNo: `${parseInt(batchId || "0") + 1}`,
         quantity: quantity,
         manufacturingDate: actualBatch?.manufacturingDate,
-        cost: data?.batches?.[parseInt(batchId || "0")]?.cost,
+        cost: `${
+          (parseFloat(actualBatchCost) * parseFloat(quantity)) /
+          parseFloat(actualBatchInitialQuantity)
+        }`,
         ...(actualBatch?.expiryDate !== undefined && {
           expiryDate: actualBatch?.expiryDate,
         }),
