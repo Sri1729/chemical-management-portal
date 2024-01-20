@@ -1,16 +1,17 @@
 import { LabDashboard } from "@/components/LaboratoryDashboard";
-import { getAllLaboratory } from "@/services";
 import React from "react";
 
-export async function generateStaticParams() {
-  const lab = await getAllLaboratory();
-  return lab.map((item) => ({ slug: item.id }));
+interface PageProps {
+  params: {
+    slug: string;
+  };
 }
 
-const Page = ({ params }: { params: { slug: string } }) => {
+const Page: React.FC<PageProps> = ({ params }) => {
+  const slug = params?.slug;
   return (
     <div>
-      <LabDashboard id={params?.slug} />
+      <LabDashboard id={slug} />
     </div>
   );
 };
