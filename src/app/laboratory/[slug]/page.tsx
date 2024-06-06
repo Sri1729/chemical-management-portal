@@ -2,6 +2,8 @@ import { LabDashboard } from "@/components/LaboratoryDashboard";
 import { getAllLaboratory } from "@/services";
 import React from "react";
 
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   const lab = await getAllLaboratory();
   return lab.map((item) => ({ slug: item.id }));
