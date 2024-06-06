@@ -14,7 +14,6 @@ const LabDashboardComp = ({ id }: { id: string }) => {
 
   useEffect(() => {
     store.individualLab.getLabDetails(id);
-
     // Getting real time changes from firestore chemicals collection
     const unSubscribe = getRealTimeIndividualLabUpdates(
       id,
