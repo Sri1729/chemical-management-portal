@@ -30,16 +30,20 @@ interface SaveButtonProps {
   text?: string;
   onClick: () => void;
   loading: boolean;
+  fullButtonWidth?: boolean;
 }
 
 export const SaveButton = ({
   loading,
   onClick,
   text = "Save",
+  fullButtonWidth = false,
 }: SaveButtonProps) => {
   return (
     <button
-      className="bg-blue-500 text-white hover:bg-blue-600 py-2 px-6 rounded relative"
+      className={`bg-blue-500 text-white hover:bg-blue-600 py-2 px-6 rounded relative ${
+        fullButtonWidth ? "w-full" : ""
+      }`}
       onClick={onClick}
       disabled={loading}
     >
